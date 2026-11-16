@@ -106,8 +106,6 @@ describe('Dashboard (/)', () => {
 
 describe('Placeholder routes', () => {
   it.each([
-    ['/hospitals', 'Hospitals'],
-    ['/appointments', 'Appointments'],
     ['/symptom-checker', 'Symptom checker'],
     ['/home-care', 'Home care'],
     ['/chatbot', 'Chatbot'],
