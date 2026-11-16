@@ -47,8 +47,8 @@ describe('summarizeToday', () => {
 describe('outlookMatrix', () => {
   it('builds one row per division with a cell per day', () => {
     const rows = outlookMatrix(run, [
-      { divisionId: 'sylhet', name: { en: 'Sylhet', bn: 'সিলেট' } },
-      { divisionId: 'rangpur', name: { en: 'Rangpur', bn: 'রংপুর' } },
+      { divisionId: 'sylhet', name: { en: 'Sylhet', bn: 'সিলেট' }, center: [24.89, 91.87] },
+      { divisionId: 'rangpur', name: { en: 'Rangpur', bn: 'রংপুর' }, center: [25.74, 89.28] },
     ]);
     expect(rows[0]?.cells.map((c) => c?.riskLevel)).toEqual(['medium', 'low']);
     expect(rows[1]?.cells).toEqual([undefined, undefined]);

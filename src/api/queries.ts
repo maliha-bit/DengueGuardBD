@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { api } from './client';
 import type { DivisionId, TrendPeriod } from './types';
 
@@ -12,6 +12,7 @@ export const queryKeys = {
   caseTrend: (divisionId: DivisionId, period: TrendPeriod) =>
     ['cases', divisionId, period] as const,
   preventionTip: ['prevention', 'tip'] as const,
+  drivers: (divisionId: DivisionId) => ['drivers', divisionId] as const,
 };
 
 export const useDivisions = () =>
@@ -40,3 +41,20 @@ export const useCaseTrend = (divisionId: DivisionId, period: TrendPeriod) =>
 
 export const usePreventionTip = () =>
   useQuery({ queryKey: queryKeys.preventionTip, queryFn: api.getPreventionTip });
+
+export const useDivisionDrivers = (divisionId: DivisionId | null) =>
+  useQuery({
+    queryKey: queryKeys.drivers(divisionId ?? 'dhaka'),
+    queryFn: () => api.getDivisionDrivers(divisionId ?? 'dhaka'),
+    enabled: divisionId !== null,
+  });
+
+/** Turn risk alerts for a division on or off; updates the cached user. */
+export function useAlertSubscription() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ divisionId, enabled }: { divisionId: DivisionId; enabled: boolean }) =>
+      api.setAlertSubscription(divisionId, enabled),
+    onSuccess: (user) => queryClient.setQueryData(queryKeys.me, user),
+  });
+}

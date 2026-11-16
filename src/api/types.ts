@@ -17,6 +17,8 @@ export type DivisionId =
 export interface Division {
   divisionId: DivisionId;
   name: LocalizedText;
+  /** Map position [lat, lng] (divisional headquarters). */
+  center: [number, number];
 }
 
 export type Role = 'citizen' | 'donor' | 'hospital_staff' | 'lab_staff' | 'authority' | 'admin';
@@ -27,6 +29,8 @@ export interface User {
   name: LocalizedText;
   role: Role;
   divisionId: DivisionId;
+  /** Divisions the user receives risk-change alerts for. */
+  alertDivisions: DivisionId[];
 }
 
 /** FORECAST — one division, one target day. */
@@ -126,6 +130,26 @@ export interface CaseTrend {
   divisionId: DivisionId;
   period: TrendPeriod;
   points: CaseTrendPoint[];
+}
+
+export type DriverFactor = 'rainfall' | 'humidity' | 'temperature' | 'sunshine';
+export type DriverUnit = 'mm' | 'percent' | 'celsius' | 'hours';
+
+/** One weather factor behind a division's forecast. */
+export interface ForecastDriver {
+  factor: DriverFactor;
+  value: number;
+  unit: DriverUnit;
+  /** Whether this factor pushes the forecast risk up or down. */
+  direction: 'raises' | 'lowers';
+  weight: 'strong' | 'moderate' | 'weak';
+}
+
+export interface DivisionDrivers {
+  divisionId: DivisionId;
+  /** Ordered by influence, strongest first. */
+  drivers: ForecastDriver[];
+  observedAt: string;
 }
 
 export interface PreventionTip {

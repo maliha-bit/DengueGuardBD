@@ -1,4 +1,5 @@
 import type { Division, Forecast, ForecastRun, RiskLevel } from '@/api/types';
+import { forecastTrend } from '@/features/risk/riskUtils';
 
 export interface TodaySummary {
   total: number;
@@ -28,8 +29,9 @@ export function summarizeToday(run: ForecastRun): TodaySummary {
   let falling = 0;
   for (const { first: a, last: b } of byDivision.values()) {
     if (a === undefined || b === undefined) continue;
-    if (b > a) rising += 1;
-    else if (b < a) falling += 1;
+    const trend = forecastTrend(a, b);
+    if (trend === 'rising') rising += 1;
+    else if (trend === 'falling') falling += 1;
   }
   return { total: byDivision.size, counts, rising, falling };
 }

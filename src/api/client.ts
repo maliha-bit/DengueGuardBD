@@ -8,6 +8,7 @@ import type {
   BedSummary,
   CaseTrend,
   Division,
+  DivisionDrivers,
   DivisionId,
   ForecastRun,
   Notification,
@@ -34,6 +35,21 @@ async function http<T>(path: string): Promise<T> {
   return (await response.json()) as T;
 }
 
+async function send<T>(
+  path: string,
+  method: 'PUT' | 'POST' | 'DELETE',
+  body?: unknown,
+): Promise<T> {
+  const response = await fetch(`${BASE_URL}${path}`, {
+    method,
+    credentials: 'include',
+    headers: body ? { 'Content-Type': 'application/json' } : undefined,
+    body: body ? JSON.stringify(body) : undefined,
+  });
+  if (!response.ok) throw new ApiError(response.statusText, response.status);
+  return (await response.json()) as T;
+}
+
 export const api = {
   getDivisions: (): Promise<Division[]> => (USE_MOCK ? mockApi.getDivisions() : http('/divisions')),
 
@@ -55,6 +71,14 @@ export const api = {
     USE_MOCK
       ? mockApi.getCaseTrend(divisionId, period)
       : http(`/divisions/${divisionId}/cases?period=${period}`),
+
+  getDivisionDrivers: (divisionId: DivisionId): Promise<DivisionDrivers> =>
+    USE_MOCK ? mockApi.getDivisionDrivers(divisionId) : http(`/divisions/${divisionId}/drivers`),
+
+  setAlertSubscription: (divisionId: DivisionId, enabled: boolean): Promise<User> =>
+    USE_MOCK
+      ? mockApi.setAlertSubscription(divisionId, enabled)
+      : send(`/me/alerts/${divisionId}`, enabled ? 'PUT' : 'DELETE'),
 
   getPreventionTip: (): Promise<PreventionTip | null> =>
     USE_MOCK ? mockApi.getPreventionTip() : http('/prevention/tip-of-the-day'),

@@ -6,7 +6,7 @@ import { PageHeader } from '@/components/PageHeader';
 import { buttonClasses, Card, EmptyState, IconChip } from '@/components/ui';
 import { useLocale } from '@/lib/useLocale';
 
-export type PlaceholderKey = Exclude<NavKey, 'dashboard'>;
+export type PlaceholderKey = Exclude<NavKey, 'dashboard' | 'riskMap'>;
 
 /** Medical screens must show the non-diagnostic notice (NFR08). */
 const MEDICAL: PlaceholderKey[] = ['symptomChecker', 'homeCare', 'chatbot'];
