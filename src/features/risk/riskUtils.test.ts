@@ -43,6 +43,7 @@ const division = (divisionId: Division['divisionId'], en: string): Division => (
   divisionId,
   name: { en, bn: en },
   center: [23, 90],
+  districts: [],
 });
 
 const forecast = (

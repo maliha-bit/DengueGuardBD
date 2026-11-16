@@ -20,7 +20,7 @@
     "optional": "Optional",
     "selectPlaceholder": "Select an option",
     "updated": "Updated {{time}}",
-    "maybeOutdated": "May be out of date",
+    "maybeOutdated": "Possibly out of date",
     "disclaimerShort": "Not a diagnosis. Follow DGHS guidance."
   },
   "risk": {
@@ -160,14 +160,6 @@
     "comingSoonTitle": "Coming in a later phase",
     "comingSoonMessage": "This section is planned and will be built next.",
     "backToDashboard": "Back to dashboard",
-    "hospitals": {
-      "title": "Hospitals",
-      "subtitle": "Find hospitals with free general and ICU beds"
-    },
-    "appointments": {
-      "title": "Appointments",
-      "subtitle": "Book and manage medicine-doctor visits"
-    },
     "symptomChecker": {
       "title": "Symptom checker",
       "subtitle": "Answer a few questions to know what to do next"
@@ -199,7 +191,9 @@
   },
   "session": {
     "logIn": "Log in",
-    "loggedIn": "Logged in as the demo citizen."
+    "loggedIn": "Logged in as the demo citizen.",
+    "logInDemo": "Log in (demo)",
+    "requiredTitle": "Please log in"
   },
   "riskMap": {
     "title": "Risk map",
@@ -264,6 +258,138 @@
     "loginTitle": "Log in to get alerts",
     "loginBody": "Log in and we'll tell you when the risk in {{division}} changes.",
     "loginAction": "Log in (demo)"
+  },
+  "hospitals": {
+    "title": "Hospitals",
+    "subtitle": "Find free general and ICU beds near you",
+    "filtersLabel": "Hospital filters",
+    "resultsLabel": "Hospitals",
+    "searchLabel": "Search by hospital name",
+    "searchPlaceholder": "e.g. Care Hospital",
+    "division": "Division",
+    "allDivisions": "All divisions",
+    "district": "District",
+    "allDistricts": "All districts",
+    "chooseDivisionFirst": "Choose a division first",
+    "icuOnly": "Has ICU beds",
+    "sort": "Sort by",
+    "sortBy": {
+      "beds": "Most beds",
+      "nearest": "Nearest",
+      "updated": "Recently updated"
+    },
+    "count_one": "{{total}} hospital",
+    "count_other": "{{total}} hospitals",
+    "distanceFrom": "Distance from {{place}}",
+    "kmAway": "{{km}} km away",
+    "generalBeds": "General beds",
+    "icuBeds": "ICU beds",
+    "free": "free",
+    "bedsOf": "{{available}} of {{total}} free",
+    "type": {
+      "government": "Government",
+      "private": "Private"
+    },
+    "call": "Call",
+    "callLabel": "Call {{name}}",
+    "directions": "Directions",
+    "directionsLabel": "Directions to {{name}} (opens Google Maps)",
+    "seeDoctors": "See doctors",
+    "noBedsTitle": "No beds free in this district",
+    "noBedsMessage": "Every hospital in {{district}} is full right now. These hospitals in nearby districts have free beds.",
+    "nearbyTitle": "Nearby districts with free beds",
+    "inDistrict": "In {{district}}",
+    "emptyTitle": "No hospitals match",
+    "emptyMessage": "Try another name or district, or turn off the ICU filter.",
+    "clearFilters": "Clear filters"
+  },
+  "hospitalDetail": {
+    "back": "All hospitals",
+    "notFoundTitle": "Hospital not found",
+    "notFoundMessage": "This hospital is not in the directory. It may have been removed.",
+    "doctorsTitle": "Medicine doctors",
+    "doctorsEmptyTitle": "No doctors listed",
+    "doctorsEmptyMessage": "This hospital has not added doctor schedules yet.",
+    "availableOn": "Available: {{days}}",
+    "choose": "Choose",
+    "chosen": "Chosen",
+    "bookTitle": "Book a time",
+    "chooseDoctorTitle": "Choose a doctor",
+    "chooseDoctorMessage": "Pick a medicine doctor to see free times for the next 7 days."
+  },
+  "booking": {
+    "dateLabel": "Date",
+    "today": "Today",
+    "off": "Off",
+    "offLabel": "doctor not available",
+    "slotsLabel": "Times on {{date}}",
+    "placesLeft": "{{left}} of {{total}} left",
+    "full": "Full",
+    "currentSlot": "Current booking",
+    "slotsEmptyTitle": "No times left",
+    "slotsEmptyMessage": "All sessions on this day have passed. Try another date.",
+    "loginTitle": "Log in to book",
+    "loginBody": "Log in to book this time. You'll come straight back to the same slot.",
+    "confirmTitle": "Confirm appointment",
+    "doctor": "Doctor",
+    "hospital": "Hospital",
+    "date": "Date",
+    "time": "Time",
+    "places": "Places left",
+    "patientName": "Patient name",
+    "patientNameHint": "As it should appear at the hospital desk",
+    "patientNameError": "Enter at least 3 letters",
+    "confirm": "Confirm booking",
+    "chooseAnother": "Choose another time",
+    "successTitle": "Appointment booked",
+    "successMessage": "Show this serial number at the hospital desk.",
+    "serial": "Serial no.",
+    "addToCalendar": "Add to calendar",
+    "viewAppointments": "My appointments",
+    "done": "Done",
+    "calendarTitle": "Doctor appointment: {{doctor}}",
+    "calendarDescription": "Serial no. {{serial}}. Booked with DengueGuard BD.",
+    "errors": {
+      "SLOT_FULL": "This slot just filled up. Please choose another time.",
+      "DUPLICATE_BOOKING": "You have already booked this slot.",
+      "TIME_CONFLICT": "You already have an appointment at this time.",
+      "SLOT_IN_PAST": "This time has already passed. Please choose another.",
+      "generic": "Something went wrong. Please try again."
+    }
+  },
+  "appointments": {
+    "title": "My appointments",
+    "subtitle": "Your medicine-doctor visits",
+    "loginMessage": "Log in to see and manage your appointments.",
+    "tabsLabel": "Appointments",
+    "upcoming": "Upcoming",
+    "past": "Past",
+    "status": {
+      "booked": "Booked",
+      "cancelled": "Cancelled",
+      "completed": "Completed",
+      "missed": "Missed"
+    },
+    "serial": "Serial no. {{serial}}",
+    "cancel": "Cancel",
+    "reschedule": "Reschedule",
+    "cancelTitle": "Cancel this appointment?",
+    "cancelBody": "Your place with {{doctor}} on {{date}} will be released.",
+    "keep": "Keep appointment",
+    "confirmCancel": "Cancel appointment",
+    "cancelled": "Appointment cancelled. Your place was released.",
+    "rescheduleTitle": "Reschedule appointment",
+    "current": "Current: {{date}}",
+    "pickNewTime": "Choose a new time. Your current place is kept until the new one is booked.",
+    "moveTo": "Move to {{date}}",
+    "confirmReschedule": "Choose a new time",
+    "rescheduled": "Appointment moved to {{date}}.",
+    "keptOld": "Your original appointment is unchanged.",
+    "emptyUpcomingTitle": "No upcoming appointments",
+    "emptyUpcomingMessage": "Book a medicine doctor at a hospital near you.",
+    "findHospital": "Find a hospital",
+    "emptyPastTitle": "No past appointments",
+    "emptyPastMessage": "Visits you have had will appear here."
   },
   "dev": {
     "title": "UI kit",

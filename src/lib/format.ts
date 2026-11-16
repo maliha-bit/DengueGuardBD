@@ -11,6 +11,12 @@ export function formatNumber(value: number, lang: string, options?: Intl.NumberF
   return new Intl.NumberFormat(localeFor(lang), options).format(value);
 }
 
+/** Local calendar date as yyyy-mm-dd. */
+export function toIsoDate(date: Date): string {
+  const pad = (n: number) => String(n).padStart(2, '0');
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
+}
+
 /** Parse "yyyy-mm-dd" as a local date (avoids UTC off-by-one). */
 export function parseIsoDate(value: string): Date {
   const [y = 1970, m = 1, d = 1] = value.split('-').map(Number);
@@ -43,6 +49,10 @@ export const formatTime = (value: Date | string, lang: string) =>
       ? { hour: '2-digit', minute: '2-digit', hourCycle: 'h23' }
       : { hour: 'numeric', minute: '2-digit' },
   );
+
+/** Short weekday name for 0 = Sunday … 6 = Saturday. */
+export const weekdayName = (day: number, lang: string) =>
+  formatDate(new Date(2024, 0, 7 + day), lang, { weekday: 'short' });
 
 /** "20 minutes ago" / "২০ মিনিট আগে". */
 export function formatRelative(value: Date | string, lang: string, now: Date = new Date()) {

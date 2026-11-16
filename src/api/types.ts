@@ -14,11 +14,19 @@ export type RiskLevel = 'low' | 'medium' | 'high';
 export type DivisionId =
   'dhaka' | 'chattogram' | 'khulna' | 'rajshahi' | 'barishal' | 'sylhet' | 'rangpur' | 'mymensingh';
 
+export interface District {
+  districtId: string;
+  name: LocalizedText;
+  /** Map position [lat, lng] (district town). */
+  center: [number, number];
+}
+
 export interface Division {
   divisionId: DivisionId;
   name: LocalizedText;
   /** Map position [lat, lng] (divisional headquarters). */
   center: [number, number];
+  districts: District[];
 }
 
 export type Role = 'citizen' | 'donor' | 'hospital_staff' | 'lab_staff' | 'authority' | 'admin';
@@ -54,11 +62,26 @@ export interface ForecastRun {
 }
 
 /** HOSPITAL */
+export type HospitalType = 'government' | 'private';
+
 export interface Hospital {
   hospitalId: string;
   name: LocalizedText;
+  type: HospitalType;
   divisionId: DivisionId;
+  districtId: string;
   district: LocalizedText;
+  address: LocalizedText;
+  /** E.164 phone number for tel: links. */
+  phone: string;
+  /** [lat, lng] */
+  location: [number, number];
+}
+
+/** Hospital with its latest bed availability (search results). */
+export interface HospitalSummary {
+  hospital: Hospital;
+  beds: BedAvailability;
 }
 
 /** BED_AVAILABILITY */
@@ -81,26 +104,36 @@ export interface BedSummary {
   updatedAt: string;
 }
 
+/** 0 = Sunday … 6 = Saturday (JavaScript Date.getDay). */
+export type Weekday = 0 | 1 | 2 | 3 | 4 | 5 | 6;
+
 export interface Doctor {
   doctorId: string;
+  hospitalId: string;
   name: LocalizedText;
   specialty: LocalizedText;
+  availableDays: Weekday[];
 }
 
-/** SLOT */
+/** SLOT — one consultation session with a fixed number of serial places. */
 export interface Slot {
   slotId: string;
   doctorId: string;
   hospitalId: string;
   start: string;
+  capacity: number;
+  booked: number;
 }
+
+export type AppointmentStatus = 'booked' | 'cancelled' | 'completed' | 'missed';
 
 /** APPOINTMENT */
 export interface Appointment {
   appointmentId: string;
   userId: string;
-  status: 'booked' | 'cancelled' | 'completed';
+  status: AppointmentStatus;
   serialNo: number;
+  patientName: string;
   slot: Slot;
   doctor: Doctor;
   hospital: Hospital;

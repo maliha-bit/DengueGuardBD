@@ -1,12 +1,16 @@
 /**
  * Mock implementations of the planned REST endpoints. All data is SIMULATED.
  *
- * Dev helpers: add `?mock=empty` or `?mock=error` to the URL to see every card's
- * empty or error state.
+ * Dev helpers (URL query): `?mock=empty` / `?mock=error` show empty / error states,
+ * `?mock=stale` makes the forecast two days old, `?mock=race` makes the next booking
+ * find its slot just filled by someone else.
  */
 import type {
   Appointment,
   BedSummary,
+  Doctor,
+  HospitalSummary,
+  Slot,
   CaseTrend,
   Division,
   DivisionDrivers,
@@ -25,19 +29,110 @@ import {
   currentUser,
   divisions,
   forecastProfile,
+  doctors,
+  hashString,
   hospitals,
-  nextAppointment,
   notifications,
   preventionTips,
   riskThresholds,
   seededRandom,
 } from './seed';
+import {
+  BookingStore,
+  makeSlotId,
+  SLOT_CAPACITY,
+  toIsoDate,
+  type StoredAppointment,
+} from './bookingStore';
+
+/** Simulated demand: about 15% of sessions are already full, the rest partly booked. */
+function initialBooked(slotId: string): number {
+  const h = hashString(slotId);
+  return h % 100 < 15 ? SLOT_CAPACITY : (h >>> 8) % 8;
+}
+
+/** Same date offset, moved off Friday (the weekly holiday) when needed. */
+function dayOffset(now: Date, days: number): string {
+  const date = new Date(now);
+  date.setDate(date.getDate() + days);
+  if (date.getDay() === 5) date.setDate(date.getDate() + (days >= 0 ? 1 : -1));
+  return toIsoDate(date);
+}
+
+function createStore(now: Date): BookingStore {
+  const store = new BookingStore({ doctors, initialBooked });
+  const userId = currentUser.userId;
+  const patientName = currentUser.name.en;
+  // Upcoming: Dr. Farhana Akter, Dhaka Care Hospital, in two days at 10:30, serial 7.
+  store.seed({
+    userId,
+    patientName,
+    status: 'booked',
+    serialNo: 7,
+    slotId: makeSlotId('d-h-dhaka-1-1', dayOffset(now, 2), '10:30'),
+  });
+  // History.
+  store.seed({
+    userId,
+    patientName,
+    status: 'completed',
+    serialNo: 4,
+    slotId: makeSlotId('d-h-dhaka-4-1', dayOffset(now, -9), '09:00'),
+  });
+  store.seed({
+    userId,
+    patientName,
+    status: 'cancelled',
+    serialNo: 2,
+    slotId: makeSlotId('d-h-dhaka-1-1', dayOffset(now, -4), '15:00'),
+  });
+  store.seed({
+    userId,
+    patientName,
+    status: 'missed',
+    serialNo: 9,
+    slotId: makeSlotId('d-h-dhaka-2-1', dayOffset(now, -20), '18:00'),
+  });
+  return store;
+}
+
+let store = createStore(new Date());
+
+/** Test helper: direct access to the in-memory booking store. */
+export const mockBookingStore = () => store;
+
+const doctorById = new Map(doctors.map((d) => [d.doctorId, d]));
+const hospitalById = new Map(hospitals.map((h) => [h.hospitalId, h]));
+
+function toAppointment(stored: StoredAppointment): Appointment {
+  const slot = store.getSlot(stored.slotId);
+  const doctor = doctorById.get(slot.doctorId);
+  const hospital = hospitalById.get(slot.hospitalId);
+  if (!doctor || !hospital) throw new Error(`Unknown doctor or hospital for ${stored.slotId}`);
+  return { ...stored, slot, doctor, hospital };
+}
+
+function myAppointments(): Appointment[] {
+  return store
+    .appointmentsFor(currentUser.userId)
+    .map(toAppointment)
+    .sort((a, b) => a.slot.start.localeCompare(b.slot.start));
+}
+
+function hospitalSummaries(now: Date): HospitalSummary[] {
+  const beds = new Map(bedAvailability(now).map((b) => [b.hospitalId, b]));
+  return hospitals.flatMap((hospital) => {
+    const bed = beds.get(hospital.hospitalId);
+    return bed ? [{ hospital, beds: bed }] : [];
+  });
+}
 
 let delayMs = 400;
 
 /** Tests call this between cases so in-memory changes do not leak. */
 export function resetMockState() {
   currentUser.alertDivisions = [];
+  store = createStore(new Date());
 }
 
 /** Tests set this to 0. */
@@ -45,12 +140,13 @@ export function setMockDelay(ms: number) {
   delayMs = ms;
 }
 
-type Scenario = 'normal' | 'empty' | 'error' | 'stale';
+type Scenario = 'normal' | 'empty' | 'error' | 'stale' | 'race';
+const SCENARIOS: Scenario[] = ['empty', 'error', 'stale', 'race'];
 
 function scenario(): Scenario {
   if (typeof window === 'undefined') return 'normal';
-  const value = new URLSearchParams(window.location.search).get('mock');
-  return value === 'empty' || value === 'error' || value === 'stale' ? value : 'normal';
+  const value = new URLSearchParams(window.location.search).get('mock') as Scenario | null;
+  return value && SCENARIOS.includes(value) ? value : 'normal';
 }
 
 export class MockApiError extends Error {}
@@ -61,6 +157,13 @@ async function respond<T>(build: () => T, empty: T): Promise<T> {
   if (mode === 'error') throw new MockApiError('Simulated network error');
   if (mode === 'empty') return empty;
   return build();
+}
+
+/** Writes ignore the "empty" scenario (they act on the real in-memory store). */
+async function mutate<T>(run: () => T): Promise<T> {
+  await new Promise((resolve) => setTimeout(resolve, delayMs));
+  if (scenario() === 'error') throw new MockApiError('Simulated network error');
+  return run();
 }
 
 const isoDate = (d: Date) => {
@@ -211,7 +314,54 @@ export const mockApi = {
       };
     }, null),
 
-  getNextAppointment: () => respond<Appointment | null>(() => nextAppointment(new Date()), null),
+  getNextAppointment: () =>
+    respond<Appointment | null>(() => {
+      const now = new Date();
+      return (
+        myAppointments().find((a) => a.status === 'booked' && new Date(a.slot.start) > now) ?? null
+      );
+    }, null),
+
+  getHospitals: () => respond<HospitalSummary[]>(() => hospitalSummaries(new Date()), []),
+
+  getHospital: (hospitalId: string) =>
+    respond<HospitalSummary | null>(
+      () => hospitalSummaries(new Date()).find((s) => s.hospital.hospitalId === hospitalId) ?? null,
+      null,
+    ),
+
+  getDoctors: (hospitalId: string) =>
+    respond<Doctor[]>(() => doctors.filter((d) => d.hospitalId === hospitalId), []),
+
+  /** Sessions for one doctor on one day (yyyy-mm-dd). */
+  getSlots: (doctorId: string, isoDate: string) =>
+    respond<Slot[]>(() => store.listSlots(doctorId, isoDate, new Date()), []),
+
+  getAppointments: () => respond<Appointment[]>(myAppointments, []),
+
+  bookAppointment: (slotId: string, patientName: string) =>
+    mutate<Appointment>(() => {
+      if (scenario() === 'race') store.fillSlot(slotId);
+      return toAppointment(
+        store.book({ userId: currentUser.userId, slotId, patientName, now: new Date() }),
+      );
+    }),
+
+  cancelAppointment: (appointmentId: string) =>
+    mutate<Appointment>(() => toAppointment(store.cancel(appointmentId, currentUser.userId))),
+
+  rescheduleAppointment: (appointmentId: string, newSlotId: string) =>
+    mutate<Appointment>(() => {
+      if (scenario() === 'race') store.fillSlot(newSlotId);
+      return toAppointment(
+        store.reschedule({
+          appointmentId,
+          userId: currentUser.userId,
+          newSlotId,
+          now: new Date(),
+        }),
+      );
+    }),
 
   getNotifications: () => respond<Notification[]>(() => notifications(new Date()), []),
 

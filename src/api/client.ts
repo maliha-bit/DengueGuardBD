@@ -10,6 +10,9 @@ import type {
   Division,
   DivisionDrivers,
   DivisionId,
+  Doctor,
+  HospitalSummary,
+  Slot,
   ForecastRun,
   Notification,
   PreventionTip,
@@ -79,6 +82,38 @@ export const api = {
     USE_MOCK
       ? mockApi.setAlertSubscription(divisionId, enabled)
       : send(`/me/alerts/${divisionId}`, enabled ? 'PUT' : 'DELETE'),
+
+  getHospitals: (): Promise<HospitalSummary[]> =>
+    USE_MOCK ? mockApi.getHospitals() : http('/hospitals'),
+
+  getHospital: (hospitalId: string): Promise<HospitalSummary | null> =>
+    USE_MOCK ? mockApi.getHospital(hospitalId) : http(`/hospitals/${hospitalId}`),
+
+  getDoctors: (hospitalId: string): Promise<Doctor[]> =>
+    USE_MOCK ? mockApi.getDoctors(hospitalId) : http(`/hospitals/${hospitalId}/doctors`),
+
+  getSlots: (doctorId: string, isoDate: string): Promise<Slot[]> =>
+    USE_MOCK
+      ? mockApi.getSlots(doctorId, isoDate)
+      : http(`/doctors/${doctorId}/slots?date=${isoDate}`),
+
+  getAppointments: (): Promise<Appointment[]> =>
+    USE_MOCK ? mockApi.getAppointments() : http('/appointments'),
+
+  bookAppointment: (slotId: string, patientName: string): Promise<Appointment> =>
+    USE_MOCK
+      ? mockApi.bookAppointment(slotId, patientName)
+      : send('/appointments', 'POST', { slotId, patientName }),
+
+  cancelAppointment: (appointmentId: string): Promise<Appointment> =>
+    USE_MOCK
+      ? mockApi.cancelAppointment(appointmentId)
+      : send(`/appointments/${appointmentId}/cancel`, 'POST'),
+
+  rescheduleAppointment: (appointmentId: string, slotId: string): Promise<Appointment> =>
+    USE_MOCK
+      ? mockApi.rescheduleAppointment(appointmentId, slotId)
+      : send(`/appointments/${appointmentId}/reschedule`, 'POST', { slotId }),
 
   getPreventionTip: (): Promise<PreventionTip | null> =>
     USE_MOCK ? mockApi.getPreventionTip() : http('/prevention/tip-of-the-day'),
