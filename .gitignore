@@ -5,3 +5,6 @@ coverage
 *.local
 .env.local
 .vite
+
+# SRS document stays local
+docs/*.pdf
