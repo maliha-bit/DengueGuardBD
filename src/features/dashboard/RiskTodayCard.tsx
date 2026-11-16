@@ -121,7 +121,7 @@ export function RiskTodayCard({ className }: { className?: string }) {
     <Card
       title={t('dashboard.riskToday.title')}
       icon={Gauge}
-      actions={<CardLink to="/risk-map" label={t('dashboard.riskToday.open')} />}
+      actions={<CardLink to="/risk" label={t('dashboard.riskToday.open')} />}
       className={cn('flex flex-col', className)}
     >
       <QueryState

@@ -27,7 +27,7 @@ export function OutlookCard({ className }: { className?: string }) {
     <Card
       title={t('dashboard.outlook.title')}
       icon={CalendarRange}
-      actions={<CardLink to="/risk-map" label={t('dashboard.outlook.open')} />}
+      actions={<CardLink to="/risk" label={t('dashboard.outlook.open')} />}
       className={cn('flex flex-col', className)}
     >
       <QueryState

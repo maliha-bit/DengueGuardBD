@@ -1,0 +1,14 @@
+/**
+ * Leaflet setup for Vite. Leaflet looks up its default marker images relative to its CSS,
+ * which breaks after bundling; point them at the bundled asset URLs instead.
+ */
+import L from 'leaflet';
+import 'leaflet/dist/leaflet.css';
+import iconRetinaUrl from 'leaflet/dist/images/marker-icon-2x.png';
+import iconUrl from 'leaflet/dist/images/marker-icon.png';
+import shadowUrl from 'leaflet/dist/images/marker-shadow.png';
+
+delete (L.Icon.Default.prototype as unknown as { _getIconUrl?: unknown })._getIconUrl;
+L.Icon.Default.mergeOptions({ iconRetinaUrl, iconUrl, shadowUrl });
+
+export { L };

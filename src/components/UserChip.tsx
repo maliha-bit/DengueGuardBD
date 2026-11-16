@@ -1,14 +1,33 @@
-import { ChevronDown } from 'lucide-react';
+import { ChevronDown, LogIn } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useCurrentUser } from '@/api/queries';
-import { Skeleton } from '@/components/ui';
+import { useSession } from '@/app/session';
+import { Button, Skeleton, useToast } from '@/components/ui';
 import { useLocale } from '@/lib/useLocale';
 import { Avatar } from './Avatar';
 
-/** Avatar initials + name + role; links to the profile. */
+/** Avatar initials + name + role; links to the profile. Guests see "Log in". */
 export function UserChip() {
   const { t, l } = useLocale();
+  const { isLoggedIn, signIn } = useSession();
+  const toast = useToast();
   const { data: user, isPending, isError } = useCurrentUser();
+
+  if (!isLoggedIn) {
+    return (
+      <Button
+        variant="dark"
+        size="sm"
+        leadingIcon={LogIn}
+        onClick={() => {
+          signIn();
+          toast({ message: t('session.loggedIn') });
+        }}
+      >
+        {t('session.logIn')}
+      </Button>
+    );
+  }
 
   if (isPending) {
     return (

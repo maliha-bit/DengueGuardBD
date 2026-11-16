@@ -37,7 +37,7 @@ export interface NavItem {
 
 export const NAV_ITEMS: NavItem[] = [
   { key: 'dashboard', to: '/', icon: LayoutDashboard, badge: 'alerts' },
-  { key: 'riskMap', to: '/risk-map', icon: Map },
+  { key: 'riskMap', to: '/risk', icon: Map },
   { key: 'hospitals', to: '/hospitals', icon: Hospital },
   { key: 'appointments', to: '/appointments', icon: CalendarCheck, badge: 'appointments' },
   { key: 'symptomChecker', to: '/symptom-checker', icon: Stethoscope },

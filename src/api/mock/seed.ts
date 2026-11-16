@@ -16,14 +16,14 @@ import type {
 } from '../types';
 
 export const divisions: Division[] = [
-  { divisionId: 'dhaka', name: { en: 'Dhaka', bn: 'ঢাকা' } },
-  { divisionId: 'chattogram', name: { en: 'Chattogram', bn: 'চট্টগ্রাম' } },
-  { divisionId: 'khulna', name: { en: 'Khulna', bn: 'খুলনা' } },
-  { divisionId: 'rajshahi', name: { en: 'Rajshahi', bn: 'রাজশাহী' } },
-  { divisionId: 'barishal', name: { en: 'Barishal', bn: 'বরিশাল' } },
-  { divisionId: 'sylhet', name: { en: 'Sylhet', bn: 'সিলেট' } },
-  { divisionId: 'rangpur', name: { en: 'Rangpur', bn: 'রংপুর' } },
-  { divisionId: 'mymensingh', name: { en: 'Mymensingh', bn: 'ময়মনসিংহ' } },
+  { divisionId: 'dhaka', name: { en: 'Dhaka', bn: 'ঢাকা' }, center: [23.81, 90.41] },
+  { divisionId: 'chattogram', name: { en: 'Chattogram', bn: 'চট্টগ্রাম' }, center: [22.36, 91.78] },
+  { divisionId: 'khulna', name: { en: 'Khulna', bn: 'খুলনা' }, center: [22.85, 89.54] },
+  { divisionId: 'rajshahi', name: { en: 'Rajshahi', bn: 'রাজশাহী' }, center: [24.37, 88.6] },
+  { divisionId: 'barishal', name: { en: 'Barishal', bn: 'বরিশাল' }, center: [22.7, 90.35] },
+  { divisionId: 'sylhet', name: { en: 'Sylhet', bn: 'সিলেট' }, center: [24.89, 91.87] },
+  { divisionId: 'rangpur', name: { en: 'Rangpur', bn: 'রংপুর' }, center: [25.74, 89.28] },
+  { divisionId: 'mymensingh', name: { en: 'Mymensingh', bn: 'ময়মনসিংহ' }, center: [24.75, 90.42] },
 ];
 
 /** Simulated base daily cases and 7-day slope per division (drives risk levels). */
@@ -135,6 +135,7 @@ export const currentUser: User = {
   name: { en: 'Ayesha Rahman', bn: 'আয়েশা রহমান' },
   role: 'citizen',
   divisionId: 'dhaka',
+  alertDivisions: [],
 };
 
 const doctor: Doctor = {

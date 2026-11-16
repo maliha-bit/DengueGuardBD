@@ -9,8 +9,10 @@ import type {
   BedSummary,
   CaseTrend,
   Division,
+  DivisionDrivers,
   DivisionId,
   Forecast,
+  ForecastDriver,
   ForecastRun,
   Notification,
   PreventionTip,
@@ -33,17 +35,22 @@ import {
 
 let delayMs = 400;
 
+/** Tests call this between cases so in-memory changes do not leak. */
+export function resetMockState() {
+  currentUser.alertDivisions = [];
+}
+
 /** Tests set this to 0. */
 export function setMockDelay(ms: number) {
   delayMs = ms;
 }
 
-type Scenario = 'normal' | 'empty' | 'error';
+type Scenario = 'normal' | 'empty' | 'error' | 'stale';
 
 function scenario(): Scenario {
   if (typeof window === 'undefined') return 'normal';
   const value = new URLSearchParams(window.location.search).get('mock');
-  return value === 'empty' || value === 'error' ? value : 'normal';
+  return value === 'empty' || value === 'error' || value === 'stale' ? value : 'normal';
 }
 
 export class MockApiError extends Error {}
@@ -79,6 +86,10 @@ function predictedCases(divisionId: DivisionId, dayIndex: number) {
 function buildForecastRun(now: Date): ForecastRun {
   const generatedAt = new Date(now);
   generatedAt.setHours(6, 0, 0, 0);
+  // Never in the future (before 06:00 the latest run is yesterday's).
+  if (generatedAt > now) generatedAt.setDate(generatedAt.getDate() - 1);
+  // ?mock=stale: pretend the last model run was two days ago.
+  if (scenario() === 'stale') generatedAt.setDate(generatedAt.getDate() - 2);
   const days = Array.from({ length: 7 }, (_, i) => {
     const d = new Date(now);
     d.setDate(d.getDate() + i);
@@ -129,10 +140,53 @@ function buildCaseTrend(divisionId: DivisionId, period: TrendPeriod, now: Date):
   };
 }
 
+function buildDrivers(divisionId: DivisionId, now: Date): DivisionDrivers {
+  const { base, slope } = forecastProfile[divisionId];
+  const rand = seededRandom(divisionId.length * 31 + base);
+  const rising = slope > 0;
+  const weight = (strength: number): ForecastDriver['weight'] =>
+    strength > 0.66 ? 'strong' : strength > 0.33 ? 'moderate' : 'weak';
+  const drivers: ForecastDriver[] = [
+    {
+      factor: 'rainfall',
+      value: Math.round(rising ? 60 + rand() * 90 : 10 + rand() * 30),
+      unit: 'mm',
+      direction: rising ? 'raises' : 'lowers',
+      weight: weight(Math.min(1, Math.abs(slope) / 8)),
+    },
+    {
+      factor: 'humidity',
+      value: Math.round(rising ? 80 + rand() * 12 : 62 + rand() * 10),
+      unit: 'percent',
+      direction: rising ? 'raises' : 'lowers',
+      weight: weight(0.4 + rand() * 0.4),
+    },
+    {
+      factor: 'temperature',
+      value: Math.round((26 + rand() * 6) * 10) / 10,
+      unit: 'celsius',
+      direction: 'raises',
+      weight: weight(0.2 + rand() * 0.5),
+    },
+    {
+      factor: 'sunshine',
+      value: Math.round((rising ? 3 + rand() * 2 : 6 + rand() * 2) * 10) / 10,
+      unit: 'hours',
+      direction: rising ? 'raises' : 'lowers',
+      weight: weight(rand() * 0.5),
+    },
+  ];
+  const rank = { strong: 0, moderate: 1, weak: 2 } as const;
+  drivers.sort((a, b) => rank[a.weight] - rank[b.weight]);
+  const observedAt = new Date(now);
+  observedAt.setHours(5, 0, 0, 0);
+  return { divisionId, drivers, observedAt: observedAt.toISOString() };
+}
+
 export const mockApi = {
   getDivisions: () => respond<Division[]>(() => divisions, []),
 
-  getCurrentUser: () => respond<User>(() => currentUser, currentUser),
+  getCurrentUser: () => respond<User>(() => ({ ...currentUser }), currentUser),
 
   getLatestForecast: () =>
     respond<ForecastRun>(() => buildForecastRun(new Date()), {
@@ -167,6 +221,21 @@ export const mockApi = {
       period,
       points: [],
     }),
+
+  getDivisionDrivers: (divisionId: DivisionId) =>
+    respond<DivisionDrivers>(() => buildDrivers(divisionId, new Date()), {
+      divisionId,
+      drivers: [],
+      observedAt: new Date().toISOString(),
+    }),
+
+  /** Saves (in memory) whether the user gets alerts for a division. */
+  setAlertSubscription: (divisionId: DivisionId, enabled: boolean) =>
+    respond<User>(() => {
+      const others = currentUser.alertDivisions.filter((id) => id !== divisionId);
+      currentUser.alertDivisions = enabled ? [...others, divisionId] : others;
+      return { ...currentUser };
+    }, currentUser),
 
   getPreventionTip: () =>
     respond<PreventionTip | null>(() => {

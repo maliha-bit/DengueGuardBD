@@ -160,10 +160,6 @@
     "comingSoonTitle": "Coming in a later phase",
     "comingSoonMessage": "This section is planned and will be built next.",
     "backToDashboard": "Back to dashboard",
-    "riskMap": {
-      "title": "Risk map",
-      "subtitle": "Division-wise dengue risk on a map"
-    },
     "hospitals": {
       "title": "Hospitals",
       "subtitle": "Find hospitals with free general and ICU beds"
@@ -200,6 +196,74 @@
       "title": "Profile",
       "subtitle": "Your account, language and notification settings"
     }
+  },
+  "session": {
+    "logIn": "Log in",
+    "loggedIn": "Logged in as the demo citizen."
+  },
+  "riskMap": {
+    "title": "Risk map",
+    "subtitle": "Today's dengue risk by division",
+    "viewLabel": "View",
+    "viewMap": "Map",
+    "viewList": "List",
+    "mapLabel": "Map of Bangladesh divisions coloured by dengue risk",
+    "listLabel": "Divisions sorted by risk, highest first",
+    "panelLabel": "Division details",
+    "markerLabel": "{{division}}: {{risk}}",
+    "legend": "Risk level",
+    "selectTitle": "Select a division",
+    "selectMessage": "Tap a division on the map or in the list to see its 7-day outlook.",
+    "tilesFailed": "The map couldn't load, so we're showing the list instead.",
+    "offline": "You're offline, so we're showing the list instead.",
+    "retryMap": "Try map again",
+    "emptyTitle": "No forecast yet",
+    "emptyMessage": "Today's division forecast has not been published.",
+    "todayCases": "{{count}} forecast cases today",
+    "outlook": "7-day outlook",
+    "trend": {
+      "rising": "Rising",
+      "falling": "Falling",
+      "stable": "Stable"
+    },
+    "short": {
+      "low": "Low",
+      "medium": "Medium",
+      "high": "High"
+    },
+    "driversTitle": "Top drivers",
+    "drivers": {
+      "rainfall": "Rainfall (7 days)",
+      "humidity": "Humidity",
+      "temperature": "Temperature",
+      "sunshine": "Sunshine"
+    },
+    "units": {
+      "mm": "mm",
+      "hours": "h/day"
+    },
+    "impact": {
+      "raises": "Raises risk",
+      "lowers": "Lowers risk"
+    },
+    "weight": {
+      "strong": "strong",
+      "moderate": "moderate",
+      "weak": "weak"
+    },
+    "driversEmptyTitle": "No driver data",
+    "driversEmptyMessage": "Weather drivers for this division are not available yet.",
+    "updated": "Forecast updated {{time}}",
+    "outOfDate": "Out of date",
+    "findHospitals": "Find hospitals here",
+    "alertsOn": "Turn on alerts",
+    "alertsActive": "Alerts on",
+    "alertsSaved": "Alerts turned on for {{division}}.",
+    "alertsRemoved": "Alerts turned off for {{division}}.",
+    "alertsError": "Couldn't save your alert settings. Try again.",
+    "loginTitle": "Log in to get alerts",
+    "loginBody": "Log in and we'll tell you when the risk in {{division}} changes.",
+    "loginAction": "Log in (demo)"
   },
   "dev": {
     "title": "UI kit",
