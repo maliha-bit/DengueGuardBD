@@ -1,0 +1,10 @@
+dist
+dev-dist
+node_modules
+coverage
+data
+dataset.csv
+docs
+src/ml
+package-lock.json
+*.md
