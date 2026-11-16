@@ -6,52 +6,64 @@ import { formatNumber } from '@/lib/format';
 import { Badge, type BadgeTone } from './Badge';
 import { Card, type CardTone } from './Card';
 
-export interface StatCardProps {
-  title: ReactNode;
-  icon?: LucideIcon;
+export interface StatValueProps {
   value: number | string;
   unit?: ReactNode;
   delta?: { label: ReactNode; tone?: BadgeTone };
-  /** Muted line under the value (e.g. "Updated 20 min ago"). */
-  caption?: ReactNode;
   /** Small right-aligned block next to the value. */
   aside?: ReactNode;
+  onDark?: boolean;
+  className?: string;
+}
+
+/** Big number + small unit, e.g. "62 beds". Numbers use locale digits. */
+export function StatValue({ value, unit, delta, aside, onDark, className }: StatValueProps) {
+  const { i18n } = useTranslation();
+  const display = typeof value === 'number' ? formatNumber(value, i18n.language) : value;
+  const mutedText = onDark ? 'text-white/70' : 'text-brand-muted';
+  return (
+    <div className={cn('flex items-end justify-between gap-3', className)}>
+      <div className="flex min-w-0 items-start gap-1.5">
+        <span className="text-stat">{display}</span>
+        <div className="flex min-w-0 flex-col items-start gap-1 pt-1">
+          {delta && <Badge tone={delta.tone ?? 'lime'}>{delta.label}</Badge>}
+          {unit && <span className={cn('text-xs leading-tight', mutedText)}>{unit}</span>}
+        </div>
+      </div>
+      {aside && <div className={cn('shrink-0 text-right text-xs', mutedText)}>{aside}</div>}
+    </div>
+  );
+}
+
+export interface StatCardProps extends StatValueProps {
+  title: ReactNode;
+  icon?: LucideIcon;
+  /** Muted line under the value (e.g. "Updated 20 min ago"). */
+  caption?: ReactNode;
   actions?: ReactNode;
   tone?: CardTone;
-  className?: string;
   children?: ReactNode;
 }
 
-/** Card with a big number + small unit, e.g. "62 beds". Numbers use locale digits. */
+/** Card with a StatValue. */
 export function StatCard({
   title,
   icon,
-  value,
-  unit,
-  delta,
   caption,
-  aside,
   actions,
   tone = 'light',
   className,
   children,
+  ...valueProps
 }: StatCardProps) {
-  const { i18n } = useTranslation();
-  const display = typeof value === 'number' ? formatNumber(value, i18n.language) : value;
-  const mutedText = tone === 'dark' ? 'text-white/70' : 'text-brand-muted';
   return (
     <Card tone={tone} title={title} icon={icon} actions={actions} className={className}>
-      <div className="flex items-end justify-between gap-3">
-        <div className="flex items-start gap-1.5">
-          <span className="text-stat">{display}</span>
-          <div className="flex flex-col items-start gap-1">
-            {delta && <Badge tone={delta.tone ?? 'lime'}>{delta.label}</Badge>}
-            {unit && <span className={cn('text-xs', mutedText)}>{unit}</span>}
-          </div>
-        </div>
-        {aside && <div className={cn('text-right text-xs', mutedText)}>{aside}</div>}
-      </div>
-      {caption && <p className={cn('mt-2 text-xs', mutedText)}>{caption}</p>}
+      <StatValue {...valueProps} onDark={tone === 'dark'} />
+      {caption && (
+        <p className={cn('mt-2 text-xs', tone === 'dark' ? 'text-white/70' : 'text-brand-muted')}>
+          {caption}
+        </p>
+      )}
       {children}
     </Card>
   );

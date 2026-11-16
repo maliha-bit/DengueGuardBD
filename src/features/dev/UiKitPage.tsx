@@ -15,7 +15,7 @@ import {
   Search,
   Trash2,
 } from 'lucide-react';
-import { LanguageToggle } from '@/components/LanguageToggle';
+import { LanguageSwitch } from '@/components/LanguageSwitch';
 import {
   Badge,
   Button,
@@ -86,7 +86,7 @@ export default function UiKitPage() {
             {t('dev.devOnly')}
           </Badge>
           <div className="ml-auto flex items-center gap-2">
-            <LanguageToggle />
+            <LanguageSwitch />
             <Button variant="secondary" iconOnly={Search} aria-label={t('common.search')} />
             <Button variant="secondary" iconOnly={Bell} aria-label={t('common.notifications')} />
           </div>

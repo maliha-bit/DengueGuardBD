@@ -37,10 +37,10 @@ export function Card({
   return (
     <section className={cn('rounded-3xl p-5', tones[tone], className)} {...rest}>
       {hasHeader && (
-        <header className="mb-4 flex items-center gap-3">
+        <header className="mb-4 flex flex-wrap items-center gap-3">
           {icon && <IconChip icon={icon} tone={tone === 'dark' ? 'onDark' : 'grey'} />}
           {title && (
-            <Title className="min-w-0 flex-1 truncate text-base font-medium">{title}</Title>
+            <Title className="min-w-[8rem] flex-1 truncate text-base font-medium">{title}</Title>
           )}
           {actions && <div className="-my-2 ml-auto flex shrink-0 items-center">{actions}</div>}
         </header>

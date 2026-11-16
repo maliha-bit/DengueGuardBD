@@ -27,7 +27,10 @@ export default tseslint.config(
   },
   {
     files: ['**/*.test.{ts,tsx}', 'src/test/**'],
-    rules: { 'react-refresh/only-export-components': 'off' },
+    rules: {
+      'react-refresh/only-export-components': 'off',
+      '@typescript-eslint/no-non-null-assertion': 'off',
+    },
   },
   prettier,
 );
