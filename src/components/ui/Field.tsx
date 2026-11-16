@@ -5,6 +5,8 @@ import { errorId, hintId } from './fieldUtils';
 export interface FieldProps {
   id: string;
   label: ReactNode;
+  /** Keep the label for screen readers but hide it visually (compact toolbars). */
+  hideLabel?: boolean;
   hint?: ReactNode;
   error?: ReactNode;
   optional?: boolean;
@@ -12,11 +14,11 @@ export interface FieldProps {
 }
 
 /** Label + control + hint/error wrapper shared by Input and Select. */
-export function Field({ id, label, hint, error, optional, children }: FieldProps) {
+export function Field({ id, label, hideLabel, hint, error, optional, children }: FieldProps) {
   const { t } = useTranslation();
   return (
     <div className="flex flex-col gap-1.5">
-      <label htmlFor={id} className="text-sm font-medium text-brand-ink">
+      <label htmlFor={id} className={hideLabel ? 'sr-only' : 'text-sm font-medium text-brand-ink'}>
         {label}
         {optional && (
           <span className="ml-1 font-normal text-brand-muted">({t('common.optional')})</span>

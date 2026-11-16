@@ -20,7 +20,7 @@ export default {
       borderRadius: {
         panel: '24px',
       },
-      width: {
+      spacing: {
         sidebar: '260px',
       },
       minHeight: {

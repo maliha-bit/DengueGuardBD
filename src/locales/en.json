@@ -18,7 +18,10 @@
     "simulatedData": "Simulated data",
     "disclaimer": "Follows DGHS/WHO guidance. Not a diagnosis.",
     "optional": "Optional",
-    "selectPlaceholder": "Select an option"
+    "selectPlaceholder": "Select an option",
+    "updated": "Updated {{time}}",
+    "maybeOutdated": "May be out of date",
+    "disclaimerShort": "Not a diagnosis. Follow DGHS guidance."
   },
   "risk": {
     "low": "Low risk",
@@ -31,15 +34,172 @@
     "errorTitle": "Something went wrong",
     "errorMessage": "We couldn't load this. Check your connection and try again."
   },
-  "home": {
-    "title": "DengueGuard BD",
-    "subtitle": "Division-wise dengue risk forecast and care access for Bangladesh.",
-    "devLink": "Open the UI kit (development only)"
-  },
   "notFound": {
     "title": "Page not found",
     "message": "The page you are looking for does not exist.",
     "backHome": "Back to home"
+  },
+  "nav": {
+    "main": "Main navigation",
+    "skipToContent": "Skip to content",
+    "newItems": "new",
+    "dashboard": "Dashboard",
+    "riskMap": "Risk map",
+    "hospitals": "Hospitals",
+    "appointments": "Appointments",
+    "symptomChecker": "Symptom checker",
+    "homeCare": "Home care",
+    "chatbot": "Chatbot",
+    "donors": "Donors",
+    "labs": "Labs",
+    "reportSite": "Report breeding site",
+    "profile": "Profile",
+    "home": "Home",
+    "risk": "Risk",
+    "more": "More"
+  },
+  "topbar": {
+    "search": "Search hospitals",
+    "division": "Division",
+    "profileLabel": "{{name}}, {{role}} — open profile",
+    "notificationsUnread": "Notifications, {{count}} unread"
+  },
+  "roles": {
+    "citizen": "Citizen",
+    "donor": "Donor",
+    "hospital_staff": "Hospital staff",
+    "lab_staff": "Lab staff",
+    "authority": "Health authority",
+    "admin": "Administrator"
+  },
+  "emergency": {
+    "title": "Emergency help",
+    "body": "Severe belly pain, repeated vomiting, bleeding or drowsiness? Get care now.",
+    "ambulance": "Ambulance",
+    "hotline": "Health line",
+    "fab": "Emergency"
+  },
+  "notifications": {
+    "emptyTitle": "No notifications",
+    "emptyMessage": "Risk alerts and appointment updates will appear here."
+  },
+  "dashboard": {
+    "title": "Dengue Risk Overview",
+    "subtitle": "7-day forecast for your division",
+    "riskToday": {
+      "title": "Division risk today",
+      "open": "Open risk map",
+      "highUnit": "of {{total}} divisions at high risk",
+      "rising": "Divisions rising",
+      "falling": "Divisions falling",
+      "ofTotal": "{{value}} of {{total}}",
+      "emptyTitle": "No forecast yet",
+      "emptyMessage": "Today's forecast has not been published."
+    },
+    "beds": {
+      "title": "Beds near you",
+      "open": "Find a hospital bed",
+      "unit": "general beds in {{division}}",
+      "icu": "ICU",
+      "emptyTitle": "No bed data",
+      "emptyMessage": "Hospitals in {{division}} have not shared bed numbers yet.",
+      "hospitals": "Across {{count}} hospitals"
+    },
+    "appointment": {
+      "title": "Next appointment",
+      "open": "Open appointments",
+      "serial": "Serial no. {{serial}}",
+      "emptyTitle": "No upcoming appointment",
+      "emptyMessage": "Book a medicine doctor at a hospital near you.",
+      "book": "Book appointment"
+    },
+    "outlook": {
+      "title": "7-day outlook",
+      "open": "Open risk map",
+      "caption": "Risk level for each division over the next 7 days",
+      "division": "Division",
+      "today": "Today",
+      "noData": "No data",
+      "legend": "Legend",
+      "emptyTitle": "No outlook yet",
+      "emptyMessage": "The 7-day outlook will appear once the forecast is published."
+    },
+    "cases": {
+      "title": "Forecast cases",
+      "period": "Time range",
+      "weekly": "Weekly",
+      "monthly": "Monthly",
+      "next7": "Cases expected in the next 7 days",
+      "peakDay": "Peak day · {{day}}",
+      "thisMonth": "{{month}} (forecast)",
+      "lastMonth": "{{month}} (reported)",
+      "casesLabel": "Cases",
+      "reported": "Reported",
+      "forecast": "Forecast",
+      "caption": "{{division}} division",
+      "emptyTitle": "No case data",
+      "emptyMessage": "Case numbers for this division are not available yet."
+    },
+    "tip": {
+      "title": "Prevention tip of the day",
+      "checklist": "Open prevention checklist",
+      "emptyTitle": "No tip today",
+      "emptyMessage": "Check back tomorrow for a new tip."
+    },
+    "actions": {
+      "title": "Quick actions",
+      "symptoms": "Check symptoms",
+      "hospital": "Find hospital",
+      "lab": "Find lab",
+      "donor": "Request blood donor",
+      "report": "Report breeding site",
+      "chatbot": "Ask chatbot"
+    }
+  },
+  "pages": {
+    "comingSoonTitle": "Coming in a later phase",
+    "comingSoonMessage": "This section is planned and will be built next.",
+    "backToDashboard": "Back to dashboard",
+    "riskMap": {
+      "title": "Risk map",
+      "subtitle": "Division-wise dengue risk on a map"
+    },
+    "hospitals": {
+      "title": "Hospitals",
+      "subtitle": "Find hospitals with free general and ICU beds"
+    },
+    "appointments": {
+      "title": "Appointments",
+      "subtitle": "Book and manage medicine-doctor visits"
+    },
+    "symptomChecker": {
+      "title": "Symptom checker",
+      "subtitle": "Answer a few questions to know what to do next"
+    },
+    "homeCare": {
+      "title": "Home care",
+      "subtitle": "How to care for a dengue patient at home"
+    },
+    "chatbot": {
+      "title": "Chatbot",
+      "subtitle": "Ask questions about dengue in Bangla or English"
+    },
+    "donors": {
+      "title": "Donors",
+      "subtitle": "Find blood and platelet donors near you"
+    },
+    "labs": {
+      "title": "Labs",
+      "subtitle": "Find labs for NS1, CBC and other dengue tests"
+    },
+    "reportSite": {
+      "title": "Report breeding site",
+      "subtitle": "Report standing water where mosquitoes breed"
+    },
+    "profile": {
+      "title": "Profile",
+      "subtitle": "Your account, language and notification settings"
+    }
   },
   "dev": {
     "title": "UI kit",
