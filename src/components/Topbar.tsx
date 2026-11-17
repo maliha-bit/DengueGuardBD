@@ -1,6 +1,7 @@
-import { Search } from 'lucide-react';
+import { FlaskConical, Search } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { buttonClasses } from '@/components/ui';
+import { USE_MOCK } from '@/api/client';
+import { Badge, buttonClasses } from '@/components/ui';
 import { cn } from '@/lib/cn';
 import { useLocale } from '@/lib/useLocale';
 import { LanguageSwitch } from './LanguageSwitch';
@@ -21,6 +22,11 @@ export function Topbar() {
       <div className="hidden md:block">
         <UserChip />
       </div>
+      {USE_MOCK && (
+        <Badge tone="lavender" icon={FlaskConical} className="hidden min-[400px]:inline-flex">
+          {t('common.demoBadge')}
+        </Badge>
+      )}
       <div className="ml-auto flex items-center gap-2">
         <Link
           to="/hospitals"
