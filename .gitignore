@@ -9,3 +9,8 @@ coverage
 # SRS document stays local
 docs/*.pdf
 CLAUDE.md
+
+# Playwright
+playwright-report
+test-results
+blob-report

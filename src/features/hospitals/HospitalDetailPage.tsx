@@ -185,7 +185,7 @@ export default function HospitalDetailPage() {
       </Link>
       <PageHeader title={l(h.name)} subtitle={l(h.address)} />
 
-      <div className="grid items-start gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.15fr)]">
+      <div className="grid grid-cols-1 items-start gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.15fr)]">
         <div className="flex flex-col gap-4">
           <Card>
             <div className="mb-4 flex flex-wrap items-center gap-2">
@@ -228,7 +228,7 @@ export default function HospitalDetailPage() {
           </Card>
         </div>
 
-        <div ref={pickerRef} className="scroll-mt-4">
+        <div ref={pickerRef} className="min-w-0 scroll-mt-4">
           <Card title={t('hospitalDetail.bookTitle')} className="lg:sticky lg:top-4">
             {doctor ? (
               <>
