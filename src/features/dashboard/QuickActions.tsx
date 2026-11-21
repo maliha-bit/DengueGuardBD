@@ -15,7 +15,7 @@ import { useLocale } from '@/lib/useLocale';
 type ActionKey = 'symptoms' | 'hospital' | 'lab' | 'donor' | 'report' | 'chatbot';
 
 const ACTIONS: Array<{ key: ActionKey; to: string; icon: LucideIcon }> = [
-  { key: 'symptoms', to: '/symptom-checker', icon: Stethoscope },
+  { key: 'symptoms', to: '/symptoms', icon: Stethoscope },
   { key: 'hospital', to: '/hospitals', icon: Hospital },
   { key: 'lab', to: '/labs', icon: FlaskConical },
   { key: 'donor', to: '/donors', icon: Droplet },

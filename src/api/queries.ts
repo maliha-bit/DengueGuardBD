@@ -1,6 +1,13 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { api } from './client';
-import type { DivisionId, TrendPeriod } from './types';
+import type {
+  DivisionId,
+  FeverLogInput,
+  PreventionChecklist,
+  TriageAnswers,
+  TriageOutcome,
+  TrendPeriod,
+} from './types';
 
 export const queryKeys = {
   divisions: ['divisions'] as const,
@@ -18,6 +25,9 @@ export const queryKeys = {
   doctors: (hospitalId: string) => ['doctors', hospitalId] as const,
   slots: (doctorId: string, isoDate: string) => ['slots', doctorId, isoDate] as const,
   appointments: ['appointments'] as const,
+  lastTriage: ['me', 'triage', 'latest'] as const,
+  feverLog: ['me', 'fever-log'] as const,
+  checklist: ['me', 'prevention-checklist'] as const,
 };
 
 export const useDivisions = () =>
@@ -127,5 +137,76 @@ export function useRescheduleAppointment() {
     mutationFn: ({ appointmentId, slotId }: { appointmentId: string; slotId: string }) =>
       api.rescheduleAppointment(appointmentId, slotId),
     onSettled: invalidate,
+  });
+}
+
+/* ---------- Symptom checker, fever log, checklist (Phase 7) ---------- */
+
+export const useLastTriageResult = (enabled: boolean) =>
+  useQuery({ queryKey: queryKeys.lastTriage, queryFn: api.getLastTriageResult, enabled });
+
+export function useSaveTriageResult() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ outcome, answers }: { outcome: TriageOutcome; answers: TriageAnswers }) =>
+      api.saveTriageResult(outcome, answers),
+    onSuccess: (result) => queryClient.setQueryData(queryKeys.lastTriage, result),
+  });
+}
+
+export const useFeverLog = (enabled = true) =>
+  useQuery({ queryKey: queryKeys.feverLog, queryFn: api.getFeverLog, enabled });
+
+function useInvalidateFeverLog() {
+  const queryClient = useQueryClient();
+  return () => queryClient.invalidateQueries({ queryKey: queryKeys.feverLog });
+}
+
+export function useAddFeverLogEntry() {
+  const invalidate = useInvalidateFeverLog();
+  return useMutation({
+    mutationFn: (input: FeverLogInput) => api.addFeverLogEntry(input),
+    onSettled: invalidate,
+  });
+}
+
+export function useUpdateFeverLogEntry() {
+  const invalidate = useInvalidateFeverLog();
+  return useMutation({
+    mutationFn: ({ entryId, input }: { entryId: string; input: FeverLogInput }) =>
+      api.updateFeverLogEntry(entryId, input),
+    onSettled: invalidate,
+  });
+}
+
+export function useDeleteFeverLogEntry() {
+  const invalidate = useInvalidateFeverLog();
+  return useMutation({
+    mutationFn: (entryId: string) => api.deleteFeverLogEntry(entryId),
+    onSettled: invalidate,
+  });
+}
+
+export const useChecklist = (enabled: boolean) =>
+  useQuery({ queryKey: queryKeys.checklist, queryFn: api.getChecklist, enabled });
+
+/** Saves ticks optimistically; rolls back if the save fails. */
+export function useSaveChecklist() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (checked: string[]) => api.saveChecklist(checked),
+    onMutate: async (checked) => {
+      await queryClient.cancelQueries({ queryKey: queryKeys.checklist });
+      const previous = queryClient.getQueryData<PreventionChecklist>(queryKeys.checklist);
+      queryClient.setQueryData<PreventionChecklist>(queryKeys.checklist, {
+        checked,
+        updatedAt: previous?.updatedAt ?? '',
+      });
+      return { previous };
+    },
+    onError: (_error, _checked, context) => {
+      if (context?.previous) queryClient.setQueryData(queryKeys.checklist, context.previous);
+    },
+    onSuccess: (list) => queryClient.setQueryData(queryKeys.checklist, list),
   });
 }

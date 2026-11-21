@@ -57,7 +57,8 @@
     "profile": "Profile",
     "home": "Home",
     "risk": "Risk",
-    "more": "More"
+    "more": "More",
+    "feverLog": "Fever log"
   },
   "topbar": {
     "search": "Search hospitals",
@@ -76,9 +77,34 @@
   "emergency": {
     "title": "Emergency help",
     "body": "Severe belly pain, repeated vomiting, bleeding or drowsiness? Get care now.",
-    "ambulance": "Ambulance",
-    "hotline": "Health line",
-    "fab": "Emergency"
+    "ambulance": "National Emergency",
+    "hotline": "Shastho Batayon",
+    "fab": "Emergency",
+    "moreHelp": "Nearest hospital & more",
+    "callTitle": "Emergency phone numbers",
+    "nearestTitle": "Nearest emergency hospital",
+    "nearestEmptyTitle": "No emergency hospital found",
+    "nearestEmptyMessage": "Call 999 and ask for the nearest hospital emergency.",
+    "inDivision": "Nearest in your division (share your location for a closer match)",
+    "kmAway": "About {{km}} km from you",
+    "locationTitle": "Share my location",
+    "shareLocation": "Share my location",
+    "locating": "Finding your location…",
+    "locationDenied": "Location access was blocked. Tell the operator your address and a nearby landmark instead.",
+    "locationUnavailable": "We couldn't get your location. Tell the operator your address and a nearby landmark instead.",
+    "locationFound": "Location found: {{lat}}, {{lng}}",
+    "locationHint": "Send this link to family or read it to the ambulance operator.",
+    "openMap": "Open in Maps",
+    "share": "Share link",
+    "shareTitle": "My location",
+    "shareText": "I need help. This is my location:",
+    "whatToDoTitle": "What to do now",
+    "whatToDo": {
+      "fluids": "Keep drinking fluids: ORS, water, soup or coconut water, in small sips.",
+      "noNsaids": "Do not take ibuprofen, aspirin or other painkillers. Paracetamol only.",
+      "goNow": "Go to the nearest hospital emergency now. Do not wait for the fever to go down.",
+      "bringRecords": "Bring any test reports and your list of medicines."
+    }
   },
   "notifications": {
     "emptyTitle": "No notifications",
@@ -484,5 +510,270 @@
     "email": "Email",
     "fontPair": "Plus Jakarta Sans / Hind Siliguri",
     "banglaSample": "ডেঙ্গু ঝুঁকির পূর্বাভাস ০১২৩৪৫৬৭৮৯"
+  },
+  "triage": {
+    "title": "Symptom checker",
+    "subtitle": "Answer a few questions to know what to do next",
+    "progress": "Question {{current}} of {{total}}",
+    "progressLabel": "Progress",
+    "back": "Back",
+    "next": "Next",
+    "noneNext": "None of these, next",
+    "seeResult": "See result",
+    "restart": "Start again",
+    "intro": {
+      "body": "This checker uses DGHS dengue guidance to suggest a next step. It cannot tell whether you have dengue.",
+      "point1": "If someone is very unwell, call 999 now instead of using this checker.",
+      "point2": "It takes about one minute. You can go back and change any answer.",
+      "understand": "I understand",
+      "guestNote": "You're not logged in, so your result won't be saved."
+    },
+    "last": {
+      "title": "Your last check",
+      "empty": "You haven't saved a check yet.",
+      "checkedOn": "Checked {{date}}"
+    },
+    "questions": {
+      "ageGroup": {
+        "title": "How old is the person who is sick?",
+        "hint": "Choose one."
+      },
+      "feverDays": {
+        "title": "How many days have they had a fever?",
+        "hint": "Count today as a day."
+      },
+      "symptoms": {
+        "title": "Do they have any of these?",
+        "hint": "Tick all that apply."
+      },
+      "warningSigns": {
+        "title": "Do they have any of these warning signs?",
+        "hint": "Tick all that apply. Any warning sign needs emergency care."
+      },
+      "riskFactors": {
+        "title": "Does either of these apply?",
+        "hint": "Tick all that apply."
+      }
+    },
+    "options": {
+      "ageGroup": {
+        "under5": "Under 5 years",
+        "child": "5 to 14 years",
+        "adult": "15 to 59 years",
+        "senior": "60 years or older"
+      },
+      "feverDays": {
+        "none": "No fever",
+        "oneToTwo": "1 to 2 days",
+        "threeToFive": "3 to 5 days",
+        "sixPlus": "6 days or more"
+      },
+      "symptoms": {
+        "headache": "Headache",
+        "eyePain": "Pain behind the eyes",
+        "bodyAche": "Body, joint or muscle ache",
+        "rash": "Skin rash",
+        "nausea": "Nausea"
+      },
+      "warningSigns": {
+        "bellyPain": "Severe belly pain",
+        "vomiting": "Repeated vomiting",
+        "bleeding": "Bleeding from gums or nose",
+        "bloodInVomitOrStool": "Blood in vomit or stool",
+        "drowsiness": "Drowsiness or restlessness",
+        "coldClammySkin": "Cold, clammy skin",
+        "lowUrine": "Very little urine"
+      },
+      "riskFactors": {
+        "pregnancy": "Pregnant",
+        "chronicIllness": "Long-term illness (diabetes, heart, kidney or liver disease)"
+      }
+    },
+    "result": {
+      "label": "Suggested next step",
+      "nextSteps": "What to do next",
+      "reportedSigns": "Warning signs you reported",
+      "monitor": {
+        "title": "Monitor at home",
+        "summary": "No warning signs now. Rest, drink plenty and check again if anything changes."
+      },
+      "doctor": {
+        "title": "Book a doctor",
+        "summary": "See a doctor within 24 hours to check for dengue and get the right test."
+      },
+      "emergency": {
+        "title": "Go to emergency now",
+        "summary": "A warning sign can mean severe dengue. Get to a hospital emergency now."
+      }
+    },
+    "steps": {
+      "fluids": "Drink fluids often: ORS, water, soup or coconut water.",
+      "paracetamol": "For fever or pain, take paracetamol only.",
+      "logDaily": "Write down temperature and fluids every day in the fever log.",
+      "recheck": "If a warning sign appears, check again or call 999.",
+      "within24h": "Book a medicine doctor within 24 hours.",
+      "test": "Ask the doctor about an NS1 or CBC blood test.",
+      "noNsaids": "Do not take ibuprofen, aspirin or other painkillers.",
+      "call999": "Call 999 if you need an ambulance.",
+      "goNow": "Go to the nearest hospital emergency now."
+    },
+    "links": {
+      "homeCare": "Home care guide",
+      "feverLog": "Open fever log",
+      "bookDoctor": "Book a doctor",
+      "appointments": "My appointments",
+      "emergency": "Open emergency help"
+    },
+    "saved": {
+      "guest": "Not saved. Log in to keep your result.",
+      "saving": "Saving your result…",
+      "done": "Saved to your account.",
+      "error": "Couldn't save your result."
+    }
+  },
+  "homeCare": {
+    "title": "Home care",
+    "subtitle": "How to care for a dengue patient at home",
+    "doNotTake": "Do not take",
+    "openEmergency": "Emergency help",
+    "checkSymptoms": "Check symptoms",
+    "source": "Source: DGHS / WHO",
+    "reviewedOn": "Reviewed on {{date}}",
+    "sections": {
+      "hydration": {
+        "title": "Hydration",
+        "intro": "Drinking enough is the most important home treatment. Sip often through the day, even when not thirsty.",
+        "items": {
+          "ors": "ORS (oral saline), made exactly as the packet says",
+          "water": "Clean drinking water",
+          "coconut": "Coconut water",
+          "soup": "Soup, dal water or rice water",
+          "juice": "Fresh fruit juice"
+        }
+      },
+      "fever": {
+        "title": "Fever relief",
+        "intro": "Use paracetamol only. It lowers fever and pain but does not cure dengue.",
+        "items": {
+          "paracetamol": "Paracetamol is the only safe medicine for dengue fever and pain.",
+          "dose": "Never take more than the pack says. Adults: no more than 4 g (8 × 500 mg) a day. Children: dose by weight, ask a doctor.",
+          "sponge": "Sponge with normal-temperature water to cool down.",
+          "rest": "Rest in bed under a mosquito net."
+        }
+      },
+      "avoid": {
+        "title": "Medicines to avoid",
+        "intro": "These painkillers can cause dangerous bleeding in dengue.",
+        "items": {
+          "ibuprofen": "Ibuprofen",
+          "aspirin": "Aspirin",
+          "otherNsaids": "Other NSAIDs such as diclofenac or naproxen",
+          "injections": "Injections, steroids or antibiotics unless a doctor prescribes them"
+        }
+      },
+      "warning": {
+        "title": "Warning signs: go to hospital",
+        "intro": "Go to a hospital emergency straight away if you see any of these, especially when the fever goes down.",
+        "items": {
+          "bellyPain": "Severe belly pain",
+          "vomiting": "Vomiting again and again",
+          "bleeding": "Bleeding from gums or nose",
+          "drowsiness": "Blood in vomit or stool, drowsiness or restlessness",
+          "coldSkin": "Cold, clammy hands and feet",
+          "lowUrine": "Very little or no urine for 4 to 6 hours"
+        }
+      },
+      "recovery": {
+        "title": "Recovery signs",
+        "intro": "Most people get better in about a week. Keep watching until all of these are true.",
+        "items": {
+          "noFever": "No fever for 2 days without paracetamol",
+          "appetite": "Appetite is coming back",
+          "urine": "Passing urine normally",
+          "energy": "Feeling stronger each day"
+        }
+      }
+    },
+    "checklist": {
+      "title": "Prevention checklist",
+      "progress": "{{done}} of {{total}} done",
+      "report": "Report a breeding site",
+      "saveError": "Couldn't save your ticks. Try again.",
+      "savedAccount": "Ticks are saved to your account.",
+      "savedDevice": "Ticks are saved on this device. Log in to save them to your account.",
+      "items": {
+        "standingWater": "Remove standing water around the home",
+        "coverContainers": "Cover water tanks, drums and buckets",
+        "scrubContainers": "Empty and scrub containers and flower-pot trays every week",
+        "clearDrains": "Clear roof gutters, drains and old tyres",
+        "nets": "Sleep under a mosquito net, also in the daytime",
+        "repellent": "Use mosquito repellent",
+        "sleeves": "Wear long sleeves and long trousers",
+        "screens": "Use window and door screens"
+      }
+    }
+  },
+  "feverLog": {
+    "title": "Fever log",
+    "subtitle": "Track temperature, fluids and warning signs each day",
+    "loginMessage": "Log in to keep a daily fever and fluid log.",
+    "warningBanner": "Warning sign logged. Check your symptoms now",
+    "checkSymptoms": "Check symptoms",
+    "emptyTitle": "No entries yet",
+    "emptyMessage": "Add today's temperature and fluids to start your log.",
+    "added": "Entry for {{date}} saved.",
+    "updated": "Entry for {{date}} updated.",
+    "deleted": "Entry for {{date}} deleted.",
+    "saveError": "Couldn't save the entry. Try again.",
+    "deleteError": "Couldn't delete the entry. Try again.",
+    "form": {
+      "title": "Add today's entry",
+      "editTitle": "Edit entry for {{date}}",
+      "cancelEdit": "Cancel",
+      "date": "Date",
+      "unit": "Temperature unit",
+      "temperature": "Temperature ({{unit}})",
+      "tempPlaceholderC": "e.g. 38.5",
+      "tempPlaceholderF": "e.g. 101.3",
+      "tempHint": "Between {{min}} and {{max}} {{unit}}",
+      "fluids": "Fluids today (glasses)",
+      "fluidsHint": "1 glass is about 250 ml",
+      "urine": "Urine",
+      "warningSigns": "Warning signs today",
+      "warningHint": "Tick any you noticed. Leave all unticked if none.",
+      "save": "Save entry",
+      "update": "Update entry"
+    },
+    "urine": {
+      "normal": "Normal",
+      "less": "Less than usual"
+    },
+    "errors": {
+      "dateRequired": "Choose a date",
+      "dateFuture": "The date can't be in the future",
+      "dateDuplicate": "You already logged this date. Edit that entry instead.",
+      "tempRequired": "Enter a temperature",
+      "tempRange": "Enter a temperature between {{min}} and {{max}} {{unit}}",
+      "fluidsRequired": "Enter how many glasses",
+      "fluidsRange": "Enter a whole number from 0 to {{max}}"
+    },
+    "charts": {
+      "temperature": "Temperature",
+      "tempLabel": "Temperature",
+      "feverLine": "Dashed line: fever ({{value}}{{unit}})",
+      "fluids": "Fluids",
+      "glasses": "Glasses",
+      "fluidsHint": "Glasses per day"
+    },
+    "list": {
+      "title": "Past entries",
+      "glasses_one": "{{value}} glass",
+      "glasses_other": "{{value}} glasses",
+      "edit": "Edit entry for {{date}}",
+      "delete": "Delete entry for {{date}}",
+      "confirmTitle": "Delete this entry?",
+      "confirmBody": "The entry for {{date}} will be removed from your log.",
+      "confirmDelete": "Delete"
+    }
   }
 }

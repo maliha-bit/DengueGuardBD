@@ -12,6 +12,33 @@ class ResizeObserverStub {
   disconnect() {}
 }
 globalThis.ResizeObserver ??= ResizeObserverStub as unknown as typeof ResizeObserver;
+// Newer Node versions expose their own `localStorage` global, which shadows jsdom's and does
+// nothing without --localstorage-file. Use a simple in-memory Storage instead.
+class MemoryStorage implements Storage {
+  private items = new Map<string, string>();
+  get length() {
+    return this.items.size;
+  }
+  clear() {
+    this.items.clear();
+  }
+  getItem(key: string) {
+    return this.items.get(key) ?? null;
+  }
+  key(index: number) {
+    return [...this.items.keys()][index] ?? null;
+  }
+  removeItem(key: string) {
+    this.items.delete(key);
+  }
+  setItem(key: string, value: string) {
+    this.items.set(key, String(value));
+  }
+}
+Object.defineProperty(globalThis, 'localStorage', {
+  configurable: true,
+  value: new MemoryStorage(),
+});
 // Async queries wait up to 5s so parallel test files under load do not flake.
 configure({ asyncUtilTimeout: 5000 });
 installMatchMedia();

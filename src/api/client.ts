@@ -11,7 +11,13 @@ import type {
   DivisionDrivers,
   DivisionId,
   Doctor,
+  FeverLogEntry,
+  FeverLogInput,
   HospitalSummary,
+  PreventionChecklist,
+  TriageAnswers,
+  TriageOutcome,
+  TriageResult,
   Slot,
   ForecastRun,
   Notification,
@@ -117,4 +123,34 @@ export const api = {
 
   getPreventionTip: (): Promise<PreventionTip | null> =>
     USE_MOCK ? mockApi.getPreventionTip() : http('/prevention/tip-of-the-day'),
+
+  getLastTriageResult: (): Promise<TriageResult | null> =>
+    USE_MOCK ? mockApi.getLastTriageResult() : http('/me/triage/latest'),
+
+  saveTriageResult: (outcome: TriageOutcome, answers: TriageAnswers): Promise<TriageResult> =>
+    USE_MOCK
+      ? mockApi.saveTriageResult(outcome, answers)
+      : send('/me/triage', 'POST', { outcome, answers }),
+
+  getFeverLog: (): Promise<FeverLogEntry[]> =>
+    USE_MOCK ? mockApi.getFeverLog() : http('/me/fever-log'),
+
+  addFeverLogEntry: (input: FeverLogInput): Promise<FeverLogEntry> =>
+    USE_MOCK ? mockApi.addFeverLogEntry(input) : send('/me/fever-log', 'POST', input),
+
+  updateFeverLogEntry: (entryId: string, input: FeverLogInput): Promise<FeverLogEntry> =>
+    USE_MOCK
+      ? mockApi.updateFeverLogEntry(entryId, input)
+      : send(`/me/fever-log/${entryId}`, 'PUT', input),
+
+  deleteFeverLogEntry: (entryId: string): Promise<{ entryId: string }> =>
+    USE_MOCK ? mockApi.deleteFeverLogEntry(entryId) : send(`/me/fever-log/${entryId}`, 'DELETE'),
+
+  getChecklist: (): Promise<PreventionChecklist> =>
+    USE_MOCK ? mockApi.getChecklist() : http('/me/prevention-checklist'),
+
+  saveChecklist: (checked: string[]): Promise<PreventionChecklist> =>
+    USE_MOCK
+      ? mockApi.saveChecklist(checked)
+      : send('/me/prevention-checklist', 'PUT', { checked }),
 };

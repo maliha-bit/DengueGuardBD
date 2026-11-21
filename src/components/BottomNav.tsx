@@ -1,11 +1,11 @@
 import { useState } from 'react';
 import { Menu, Siren } from 'lucide-react';
 import { NavLink, useLocation } from 'react-router-dom';
+import { useEmergency } from '@/app/emergency';
 import { MORE_ITEMS, TAB_ITEMS } from '@/app/navigation';
 import { Sheet } from '@/components/ui';
 import { cn } from '@/lib/cn';
 import { useLocale } from '@/lib/useLocale';
-import { EmergencyNumbers } from './EmergencyNumbers';
 import { useNavBadges } from './useNavBadges';
 
 const tabLabel = {
@@ -15,13 +15,13 @@ const tabLabel = {
   chatbot: 'nav.chatbot',
 } as const;
 
-/** Mobile bottom tab bar (<768px) + "More" sheet + floating Emergency button. */
+/** Mobile bottom tab bar (<768px) + "More" sheet + floating Emergency button (opens the shared sheet). */
 export function BottomNav() {
   const { t, n } = useLocale();
   const { pathname } = useLocation();
   const badges = useNavBadges();
   const [moreOpen, setMoreOpen] = useState(false);
-  const [emergencyOpen, setEmergencyOpen] = useState(false);
+  const { openEmergency } = useEmergency();
   const moreActive = MORE_ITEMS.some((item) => pathname.startsWith(item.to));
 
   const tabClass = (active: boolean) =>
@@ -39,7 +39,8 @@ export function BottomNav() {
     <>
       <button
         type="button"
-        onClick={() => setEmergencyOpen(true)}
+        onClick={openEmergency}
+        aria-haspopup="dialog"
         className="fixed bottom-[calc(5.25rem+env(safe-area-inset-bottom))] right-4 z-30 inline-flex min-h-12 items-center gap-2 rounded-full bg-[#C9353A] px-5 text-sm font-semibold text-white shadow-lg shadow-black/20 md:hidden"
       >
         <Siren aria-hidden="true" className="h-5 w-5" />
@@ -109,15 +110,6 @@ export function BottomNav() {
             );
           })}
         </ul>
-      </Sheet>
-
-      <Sheet
-        open={emergencyOpen}
-        onClose={() => setEmergencyOpen(false)}
-        title={t('emergency.title')}
-      >
-        <p className="mb-4 text-sm text-brand-muted">{t('emergency.body')}</p>
-        <EmergencyNumbers layout="sheet" />
       </Sheet>
     </>
   );

@@ -4,9 +4,12 @@ import { SkeletonCard } from '@/components/ui';
 import DashboardPage from '@/features/dashboard/DashboardPage';
 import { PlaceholderPage, type PlaceholderKey } from '@/features/placeholder/PlaceholderPage';
 import AppointmentsPage from '@/features/appointments/AppointmentsPage';
+import FeverLogPage from '@/features/fever-log/FeverLogPage';
+import HomeCarePage from '@/features/homecare/HomeCarePage';
 import HospitalDetailPage from '@/features/hospitals/HospitalDetailPage';
 import HospitalsPage from '@/features/hospitals/HospitalsPage';
 import RiskMapPage from '@/features/risk/RiskMapPage';
+import SymptomCheckerPage from '@/features/triage/SymptomCheckerPage';
 import { CitizenShell } from './CitizenShell';
 import { NAV_ITEMS, type NavKey } from './navigation';
 import { NotFoundPage } from './NotFoundPage';
@@ -15,7 +18,15 @@ import { NotFoundPage } from './NotFoundPage';
 const UiKitPage = import.meta.env.DEV ? lazy(() => import('@/features/dev/UiKitPage')) : null;
 
 /** Sections with real pages (everything else in the nav is still a placeholder). */
-const BUILT_PAGES: NavKey[] = ['dashboard', 'riskMap', 'hospitals', 'appointments'];
+const BUILT_PAGES: NavKey[] = [
+  'dashboard',
+  'riskMap',
+  'hospitals',
+  'appointments',
+  'symptomChecker',
+  'homeCare',
+  'feverLog',
+];
 
 const placeholderRoutes: RouteObject[] = NAV_ITEMS.filter(
   (item) => !BUILT_PAGES.includes(item.key),
@@ -35,6 +46,10 @@ export const routes: RouteObject[] = [
       { path: 'hospitals', element: <HospitalsPage /> },
       { path: 'hospitals/:hospitalId', element: <HospitalDetailPage /> },
       { path: 'appointments', element: <AppointmentsPage /> },
+      { path: 'symptoms', element: <SymptomCheckerPage /> },
+      { path: 'symptom-checker', element: <Navigate to="/symptoms" replace /> },
+      { path: 'home-care', element: <HomeCarePage /> },
+      { path: 'fever-log', element: <FeverLogPage /> },
       ...placeholderRoutes,
       { path: '*', element: <NotFoundPage /> },
     ],

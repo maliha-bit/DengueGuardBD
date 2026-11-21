@@ -35,6 +35,7 @@ function summary(
       address: { en: 'Road', bn: 'রোড' },
       phone: '+8802000000',
       location,
+      hasEmergency: true,
     },
     beds: {
       hospitalId: id,

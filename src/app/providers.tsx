@@ -4,6 +4,7 @@ import { I18nextProvider } from 'react-i18next';
 import { ToastProvider } from '@/components/ui/Toast';
 import i18n from '@/lib/i18n';
 import { DivisionProvider } from './DivisionProvider';
+import { EmergencyProvider } from './EmergencyProvider';
 import { SessionProvider } from './SessionProvider';
 
 function createQueryClient() {
@@ -28,7 +29,9 @@ export function AppProviders({
       <QueryClientProvider client={queryClient}>
         <SessionProvider>
           <DivisionProvider>
-            <ToastProvider>{children}</ToastProvider>
+            <ToastProvider>
+              <EmergencyProvider>{children}</EmergencyProvider>
+            </ToastProvider>
           </DivisionProvider>
         </SessionProvider>
       </QueryClientProvider>
