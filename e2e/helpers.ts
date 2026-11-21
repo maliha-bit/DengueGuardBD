@@ -18,8 +18,6 @@ export const test = base.extend({
 
 export { expect };
 
-const MOBILE_TABS = new Set(['Home', 'Risk', 'Hospitals', 'Chatbot']);
-
 export const isMobile = (page: Page) => (page.viewportSize()?.width ?? 1280) < 768;
 
 /**
@@ -44,7 +42,10 @@ export async function expectNoHorizontalScroll(page: Page) {
     .toBeLessThanOrEqual(0);
 }
 
-/** Click a main-navigation item: the sidebar on desktop, the tab bar or "More" sheet on phones. */
+/**
+ * Click a main-navigation item: the sidebar on desktop, the tab bar or "More" sheet on phones.
+ * Works for the citizen app and the staff portals (each has its own items).
+ */
 export async function navigate(page: Page, name: string) {
   if (!isMobile(page)) {
     await page
@@ -54,11 +55,10 @@ export async function navigate(page: Page, name: string) {
       .click();
     return;
   }
-  const tabBar = page
-    .locator('nav.fixed')
-    .filter({ has: page.getByRole('button', { name: 'More' }) });
-  if (MOBILE_TABS.has(name)) {
-    await tabBar.getByRole('link', { name, exact: true }).click();
+  const tabBar = page.locator('nav.fixed');
+  const tab = tabBar.getByRole('link', { name, exact: true });
+  if ((await tab.count()) > 0) {
+    await tab.click();
     return;
   }
   await tabBar.getByRole('button', { name: 'More' }).click();
@@ -66,13 +66,23 @@ export async function navigate(page: Page, name: string) {
   await expect(page.getByRole('dialog', { name: 'More' })).toBeHidden();
 }
 
-/** Switch the demo role from the user menu (development helper in the mock build). */
-export async function switchRole(page: Page, role: 'Citizen' | 'Donor') {
+export type DemoAccount =
+  | 'Citizen'
+  | 'Donor'
+  | 'Hospital staff'
+  | 'Lab staff'
+  | 'Health authority'
+  | 'Administrator'
+  | 'Hospital staff — new sign-up';
+
+/** Switch the demo account from the user menu (development helper in the mock build). */
+export async function switchRole(page: Page, account: DemoAccount) {
+  const role = account === 'Hospital staff — new sign-up' ? 'Hospital staff' : account;
   const chip = page.getByRole('button', { name: /open account menu/ }).filter({ visible: true });
   await chip.click();
   const menu = page.getByRole('dialog', { name: 'Account' });
-  await menu.getByRole('radio', { name: role }).check();
-  await expect(page.getByText(`Demo role: ${role}`)).toBeVisible();
+  await menu.getByRole('radio', { name: account, exact: true }).check();
+  await expect(page.getByText(`Demo role: ${account}`)).toBeVisible();
   await expect(menu).toBeHidden();
   await expect(chip).toHaveAccessibleName(new RegExp(`, ${role} — open account menu$`));
 }

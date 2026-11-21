@@ -3,6 +3,7 @@
  * otherwise it calls the FastAPI backend at VITE_API_URL (default "/api").
  */
 import { mockApi } from './mock/handlers';
+import type { DemoAccountId } from './mock/staffStore';
 import type {
   Appointment,
   BreedingReport,
@@ -51,13 +52,13 @@ export class ApiError extends Error {
   }
 }
 
-async function http<T>(path: string): Promise<T> {
+export async function http<T>(path: string): Promise<T> {
   const response = await fetch(`${BASE_URL}${path}`, { credentials: 'include' });
   if (!response.ok) throw new ApiError(response.statusText, response.status);
   return (await response.json()) as T;
 }
 
-async function send<T>(
+export async function send<T>(
   path: string,
   method: 'PUT' | 'POST' | 'DELETE',
   body?: unknown,
@@ -78,7 +79,7 @@ export const api = {
   getCurrentUser: (): Promise<User> => (USE_MOCK ? mockApi.getCurrentUser() : http('/me')),
 
   /** Development only: switch the mock logged-in role. The real backend has no such endpoint. */
-  setDemoRole: (role: 'citizen' | 'donor'): Promise<User> =>
+  setDemoRole: (role: DemoAccountId): Promise<User> =>
     USE_MOCK ? mockApi.setDemoRole(role) : Promise.reject(new ApiError('Demo only', 400)),
 
   getLatestForecast: (): Promise<ForecastRun> =>

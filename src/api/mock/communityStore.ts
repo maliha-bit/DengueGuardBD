@@ -5,11 +5,13 @@
  * exchanged only after the donor accepts a request.
  */
 import { isInRecovery } from '@/lib/donorRules';
+import { REPORT_TRANSITIONS } from '@/lib/reports';
 import { toIsoDate } from '@/lib/format';
 import type {
   BloodGroup,
   BreedingReport,
   BreedingReportInput,
+  BreedingReportStatus,
   DonationType,
   DonorListing,
   DonorProfile,
@@ -273,7 +275,44 @@ export class CommunityStore {
     return { ...record };
   }
 
+  /** Admin directory: every donor (masked phones). */
+  allDonors(): DonorListing[] {
+    return this.donors.map((d) => this.listing(d));
+  }
+
+  /** Admin edit of a donor's name and phone. */
+  updateDonor(donorId: string, name: LocalizedText, phone: string): DonorListing {
+    const donor = this.donors.find((d) => d.donorId === donorId);
+    if (!donor) throw new CommunityError('NOT_FOUND');
+    donor.name = name;
+    donor.phone = phone;
+    return this.listing(donor);
+  }
+
   /* ---------- breeding-site reports ---------- */
+
+  /** Health authority: every report, newest first. */
+  allReports(): BreedingReport[] {
+    return [...this.reports]
+      .sort((a, b) => b.createdAt.localeCompare(a.createdAt))
+      .map((r) => ({ ...r }));
+  }
+
+  /**
+   * Health authority review: Submitted → Under review → Action taken / Rejected.
+   * The citizen's "My reports" timeline reads the same record.
+   */
+  setReportStatus(reportId: string, status: BreedingReportStatus, note: string): BreedingReport {
+    const report = this.reports.find((r) => r.reportId === reportId);
+    if (!report) throw new CommunityError('NOT_FOUND');
+    if (!REPORT_TRANSITIONS[report.status].includes(status)) {
+      throw new CommunityError('INVALID_STATUS');
+    }
+    report.status = status;
+    report.statusNote = note.trim() || undefined;
+    report.updatedAt = this.now().toISOString();
+    return { ...report };
+  }
 
   reportsOf(userId: string): BreedingReport[] {
     return this.reports
@@ -441,7 +480,50 @@ export function createCommunityStore(
     },
     { status: 'action_taken', createdAt: hoursFromNow(-240), updatedAt: hoursFromNow(-120) },
   );
+  seedCommunityReports(store, hoursFromNow);
   return store;
+}
+
+/** Simulated reports from other citizens across the divisions (for the authority view). */
+function seedCommunityReports(store: CommunityStore, hoursFromNow: (h: number) => string) {
+  const sites: Array<
+    [string, string, BreedingReportInput['siteType'], BreedingReportStatus, number]
+  > = [
+    ['mirpur', 'Mirpur 10 bus stand', 'standing_water', 'submitted', -3],
+    ['gazipur', 'Tongi rail gate drain', 'drain', 'submitted', -9],
+    ['narayanganj', 'Chashara market lane', 'tyres', 'under_review', -26],
+    ['chattogram', 'Agrabad block C', 'construction', 'submitted', -14],
+    ['coxs-bazar', 'Kolatoli road plot', 'standing_water', 'under_review', -50],
+    ['cumilla', 'Kandirpar school yard', 'other', 'action_taken', -170],
+    ['khulna', 'Sonadanga canal edge', 'drain', 'submitted', -6],
+    ['barishal', 'Launch ghat warehouse', 'tyres', 'rejected', -200],
+    ['sylhet', 'Zindabazar rooftop', 'standing_water', 'submitted', -20],
+    ['rajshahi', 'Shaheb bazar lane 2', 'construction', 'under_review', -75],
+    ['rangpur', 'Jahaj company more', 'other', 'submitted', -40],
+    ['mymensingh', 'Ganginarpar drain', 'drain', 'action_taken', -300],
+  ];
+  const centers = new Map(
+    divisions.flatMap((div) => div.districts.map((d) => [d.districtId, d.center] as const)),
+  );
+  sites.forEach(([districtId, areaName, siteType, status, hours], i) => {
+    const center = centers.get(districtId === 'mirpur' ? 'dhaka' : districtId) ?? [23.8, 90.4];
+    store.addReport(
+      `u-citizen-${i + 1}`,
+      {
+        photoUrl: null,
+        location: [center[0] + ((i % 3) - 1) * 0.01, center[1] + ((i % 2) - 0.5) * 0.02],
+        areaName,
+        siteType,
+        note: '',
+      },
+      {
+        status,
+        createdAt: hoursFromNow(hours),
+        updatedAt: hoursFromNow(Math.min(-1, Math.round(hours / 2))),
+        statusNote: status === 'rejected' ? 'Not a breeding site (dry container).' : undefined,
+      },
+    );
+  });
 }
 
 /** Simulated requests other people send once the demo user becomes a donor. */

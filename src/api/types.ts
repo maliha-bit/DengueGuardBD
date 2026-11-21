@@ -32,6 +32,8 @@ export interface Division {
 
 export type Role = 'citizen' | 'donor' | 'hospital_staff' | 'lab_staff' | 'authority' | 'admin';
 
+export type ApprovalStatus = 'pending' | 'approved' | 'rejected';
+
 /** USER */
 export interface User {
   userId: string;
@@ -40,6 +42,10 @@ export interface User {
   divisionId: DivisionId;
   /** Divisions the user receives risk-change alerts for. */
   alertDivisions: DivisionId[];
+  /** Staff accounts only: an admin must approve them before they see their portal. */
+  approvalStatus?: ApprovalStatus;
+  /** Staff accounts only: the hospital or lab they work for. */
+  organisationId?: string;
 }
 
 /** FORECAST — one division, one target day. */
@@ -285,6 +291,8 @@ export interface Lab {
   homeCollection: boolean;
   /** Daily opening hours ("08:00"–"22:00"); null = open 24 hours. */
   openingHours: { opens: string; closes: string } | null;
+  /** Hours per weekday (0 = Sunday), set by lab staff. When present, openingHours is today's. */
+  weeklyHours?: DayHours[];
   /** When the lab last updated its tests and prices. */
   updatedAt: string;
   tests: LabTest[];
@@ -439,10 +447,262 @@ export interface BreedingReportInput {
 /** BREEDING_REPORT */
 export interface BreedingReport extends BreedingReportInput {
   reportId: string;
+  /** Note from the health authority (e.g. the reason for a rejection). */
+  statusNote?: string;
   /** Reference number shown to the citizen, e.g. BR-2026-000123. */
   reference: string;
   userId: string;
   status: BreedingReportStatus;
   createdAt: string;
   updatedAt: string;
+}
+
+/** One weekday's lab hours: "closed", "24h", or a time range. */
+export type DayHours =
+  { kind: 'closed' } | { kind: 'allDay' } | { kind: 'hours'; opens: string; closes: string };
+
+/* ---------- Staff portals (Phase 10) ---------- */
+
+export type StaffRole = Extract<Role, 'hospital_staff' | 'lab_staff' | 'authority' | 'admin'>;
+
+/** A staff sign-up waiting for (or decided by) an administrator. */
+export interface StaffSignup {
+  signupId: string;
+  userId: string;
+  name: LocalizedText;
+  role: StaffRole;
+  organisation: LocalizedText;
+  /** File name of the uploaded ID document (mock). */
+  idDocument: string;
+  status: ApprovalStatus;
+  submittedAt: string;
+  decidedAt: string | null;
+  rejectReason: string | null;
+}
+
+/** A time range on one weekday, "HH:mm". */
+export interface TimeRange {
+  start: string;
+  end: string;
+}
+
+/** Weekly schedule of a doctor: time ranges per weekday. */
+export interface WeeklyScheduleDay {
+  day: Weekday;
+  ranges: TimeRange[];
+}
+
+/** Staff view of a doctor (with phone, status and weekly schedule). */
+export interface StaffDoctor extends Doctor {
+  phone: string;
+  active: boolean;
+  schedule: WeeklyScheduleDay[];
+}
+
+export interface StaffDoctorInput {
+  name: string;
+  specialty: string;
+  phone: string;
+}
+
+/** SLOT as published by hospital staff (start + end). */
+export interface PublishedSlot extends Slot {
+  end: string;
+}
+
+/** A slot the generator proposes (not yet saved). */
+export interface SlotDraft {
+  doctorId: string;
+  start: string;
+  end: string;
+  capacity: number;
+}
+
+export interface SlotGeneratorInput {
+  doctorId: string;
+  /** yyyy-mm-dd */
+  from: string;
+  /** yyyy-mm-dd */
+  to: string;
+  slotMinutes: number;
+  capacity: number;
+}
+
+/** Hospital-side appointment row (APPOINTMENT for one hospital and day). */
+export interface HospitalAppointment {
+  appointmentId: string;
+  serialNo: number;
+  patientName: string;
+  doctorId: string;
+  doctorName: LocalizedText;
+  start: string;
+  status: AppointmentStatus;
+}
+
+export interface BedUpdateInput {
+  generalAvailable: number;
+  icuAvailable: number;
+}
+
+/** Hospital record for the staff portal. */
+export interface StaffHospital {
+  hospital: Hospital;
+  beds: BedAvailability;
+}
+
+export interface LabListingInput {
+  name: string;
+  nameBn: string;
+  address: string;
+  phone: string;
+  homeCollection: boolean;
+  weeklyHours: DayHours[];
+  tests: Array<{ code: LabTestCode; priceBdt: number; priceMaxBdt: number }>;
+}
+
+/** Breeding report as the health authority sees it (with area info). */
+export interface AuthorityReport extends BreedingReport {
+  divisionId: DivisionId;
+  districtId: string;
+  district: LocalizedText;
+}
+
+export type PreventionTaskStatus = 'open' | 'in_progress' | 'completed' | 'cancelled';
+/** Board column: the stored status, or "overdue" (derived). */
+export type TaskColumn = PreventionTaskStatus | 'overdue';
+
+/** PREVENTION_TASK */
+export interface PreventionTask {
+  taskId: string;
+  title: string;
+  area: string;
+  divisionId: DivisionId;
+  assignedTeam: string;
+  /** yyyy-mm-dd */
+  dueDate: string;
+  linkedReportId: string | null;
+  status: PreventionTaskStatus;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export type PreventionTaskInput = Pick<
+  PreventionTask,
+  'title' | 'area' | 'divisionId' | 'assignedTeam' | 'dueDate' | 'linkedReportId'
+>;
+
+/** A source the chatbot answers from. */
+export interface KnowledgeSource {
+  sourceId: string;
+  title: string;
+  publisher: string;
+  url: string;
+  /** yyyy-mm-dd */
+  reviewedOn: string;
+}
+
+export type KnowledgeSourceInput = Omit<KnowledgeSource, 'sourceId'>;
+
+export type ForecastJobStatus = 'running' | 'succeeded' | 'failed';
+
+/** One run of the forecast model. */
+export interface ForecastJob {
+  jobId: string;
+  status: ForecastJobStatus;
+  /** 0–1 */
+  progress: number;
+  startedAt: string;
+  finishedAt: string | null;
+  triggeredBy: string;
+}
+
+export type AuditAction =
+  | 'beds_update'
+  | 'doctor_create'
+  | 'doctor_update'
+  | 'doctor_deactivate'
+  | 'doctor_activate'
+  | 'schedule_update'
+  | 'slots_publish'
+  | 'appointment_completed'
+  | 'appointment_missed'
+  | 'lab_publish'
+  | 'report_status'
+  | 'task_create'
+  | 'task_move'
+  | 'signup_approve'
+  | 'signup_reject'
+  | 'hospital_update'
+  | 'hospital_deactivate'
+  | 'hospital_activate'
+  | 'lab_update'
+  | 'lab_deactivate'
+  | 'lab_activate'
+  | 'user_update'
+  | 'user_deactivate'
+  | 'user_activate'
+  | 'donor_update'
+  | 'donor_deactivate'
+  | 'donor_activate'
+  | 'source_create'
+  | 'source_update'
+  | 'source_delete'
+  | 'forecast_run'
+  | 'export_csv';
+
+export interface AuditEntry {
+  auditId: string;
+  actorName: LocalizedText;
+  actorRole: Role;
+  action: AuditAction;
+  /** What the action was done to, e.g. a hospital name. */
+  target: LocalizedText;
+  createdAt: string;
+}
+
+export interface DirectoryHospital {
+  hospital: Hospital;
+  active: boolean;
+}
+
+export interface DirectoryLab {
+  lab: Lab;
+  active: boolean;
+}
+
+export interface DirectoryUser {
+  userId: string;
+  name: LocalizedText;
+  role: Role;
+  divisionId: DivisionId;
+  phone: string;
+  active: boolean;
+  createdAt: string;
+}
+
+export interface DirectoryDonor {
+  donor: DonorListing;
+  active: boolean;
+}
+
+export interface DirectoryEditInput {
+  name: string;
+  nameBn: string;
+  phone: string;
+}
+
+export type DirectoryKind = 'hospital' | 'lab' | 'user' | 'donor';
+
+export interface DailyCount {
+  /** yyyy-mm-dd */
+  date: string;
+  count: number;
+}
+
+export interface Analytics {
+  usersByRole: Array<{ role: Role; count: number }>;
+  appointmentsPerDay: DailyCount[];
+  reportsByStatus: Array<{ status: BreedingReportStatus; count: number }>;
+  chatQuestionsPerDay: DailyCount[];
+  redFlagAlertsPerDay: DailyCount[];
 }

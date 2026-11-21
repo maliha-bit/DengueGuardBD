@@ -14,7 +14,9 @@ describe('User menu: demo role switcher', () => {
     await u.click(chip!);
     const menu = await screen.findByRole('dialog', { name: 'Account' });
     expect(within(menu).getByRole('radio', { name: 'Citizen' })).toBeChecked();
-    expect(within(menu).getByRole('radio', { name: /Hospital staff/ })).toBeDisabled();
+    // Every demo account, including the staff portals, can be chosen.
+    expect(within(menu).getByRole('radio', { name: 'Hospital staff' })).toBeEnabled();
+    expect(within(menu).getByRole('radio', { name: 'Administrator' })).toBeEnabled();
 
     await u.click(within(menu).getByRole('radio', { name: 'Donor' }));
     expect(await screen.findByText('Demo role: Donor')).toBeInTheDocument();

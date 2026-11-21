@@ -203,7 +203,7 @@ export default function LabsPage() {
   );
 }
 
-function LabCard({ lab }: { lab: Lab }) {
+export function LabCard({ lab }: { lab: Lab }) {
   const { t, l, n, lang } = useLocale();
   const name = l(lab.name);
   const open = isOpenNow(lab);
