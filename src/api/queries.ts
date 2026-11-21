@@ -1,5 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { api } from './client';
+import type { DemoAccountId } from './mock/staffStore';
 import type {
   BreedingReportInput,
   DivisionId,
@@ -332,7 +333,7 @@ export function useCreateBreedingReport() {
 export function useSetDemoRole() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (role: 'citizen' | 'donor') => api.setDemoRole(role),
+    mutationFn: (role: DemoAccountId) => api.setDemoRole(role),
     onSuccess: async (user) => {
       queryClient.setQueryData(queryKeys.me, user);
       await queryClient.invalidateQueries({

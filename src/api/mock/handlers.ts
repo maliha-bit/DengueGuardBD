@@ -67,6 +67,9 @@ import {
 import { answerQuestion } from './chatService';
 import { createCommunityStore, seedInbox } from './communityStore';
 import { createHealthStore } from './healthStore';
+import { createStaffStore, DEMO_ACCOUNTS, type DemoAccountId } from './staffStore';
+import { isStaffRole } from '@/lib/access';
+import { getMockDelay, MockApiError, mutate, respond, scenario, setMockDelay } from './runtime';
 
 /** Simulated demand: about 15% of sessions are already full, the rest partly booked. */
 function initialBooked(slotId: string): number {
@@ -121,19 +124,43 @@ function createStore(now: Date): BookingStore {
 
 let store = createStore(new Date());
 /**
- * Demo accounts, one per role, so both sides of a donor request can be tried in one browser:
- * the citizen account requests, the donor account accepts. Switching the demo role switches
- * the active account. (Staff roles get accounts with their portals in later phases.)
+ * Demo accounts, one per role (plus a staff sign-up still waiting for approval), so both
+ * sides of each flow can be tried in one browser. Switching the demo role switches the
+ * active account.
  */
-export type DemoRole = 'citizen' | 'donor';
-const DEMO_ACCOUNTS: Record<DemoRole, { userId: string }> = {
-  citizen: { userId: 'u-demo-1' },
-  donor: { userId: 'u-demo-2' },
-};
+export type DemoRole = DemoAccountId;
 
-function activateDemoAccount(role: DemoRole) {
-  currentUser.userId = DEMO_ACCOUNTS[role].userId;
-  currentUser.role = role;
+function activateDemoAccount(id: DemoAccountId) {
+  const account = DEMO_ACCOUNTS[id];
+  currentUser.userId = account.userId;
+  currentUser.role = account.role;
+  currentUser.name = account.name;
+  currentUser.divisionId = account.divisionId;
+  currentUser.organisationId = account.organisationId;
+}
+
+function createStaff() {
+  return createStaffStore({
+    hospitals,
+    labs,
+    doctors,
+    now: () => new Date(),
+    jobDurationMs: () => (getMockDelay() === 0 ? 0 : 4000),
+  });
+}
+
+let staff = createStaff();
+/** Staff-portal state (bed updates, approvals, tasks, audit trail, …). */
+export const mockStaffStore = () => staff;
+
+/** The logged-in user with their live approval status (staff accounts only). */
+function me(): User {
+  return {
+    ...currentUser,
+    approvalStatus: isStaffRole(currentUser.role)
+      ? staff.approvalOf(currentUser.userId)
+      : undefined,
+  };
 }
 
 let health = createHealthStore(currentUser.userId, new Date());
@@ -168,20 +195,31 @@ function myAppointments(): Appointment[] {
     .sort((a, b) => a.slot.start.localeCompare(b.slot.start));
 }
 
-function hospitalSummaries(now: Date): HospitalSummary[] {
-  const beds = new Map(bedAvailability(now).map((b) => [b.hospitalId, b]));
+/** Seeded bed numbers with staff updates applied. */
+export function currentBeds(now: Date) {
+  return staff.applyBeds(bedAvailability(now));
+}
+
+/** Active hospitals (with admin edits) and their latest beds. */
+export function hospitalSummaries(now: Date): HospitalSummary[] {
+  const beds = new Map(currentBeds(now).map((b) => [b.hospitalId, b]));
   return hospitals.flatMap((hospital) => {
     const bed = beds.get(hospital.hospitalId);
-    return bed ? [{ hospital, beds: bed }] : [];
+    if (!bed || !staff.isHospitalActive(hospital.hospitalId)) return [];
+    return [{ hospital: staff.applyHospital(hospital), beds: bed }];
   });
 }
 
-let delayMs = 400;
+/** Active labs as citizens see them (staff listings applied). */
+function activeLabs(): Lab[] {
+  return staff.allLabs().filter((lab) => staff.isLabActive(lab.labId));
+}
 
 /** Tests call this between cases so in-memory changes do not leak. */
 export function resetMockState() {
   currentUser.alertDivisions = [];
   activateDemoAccount('citizen');
+  staff = createStaff();
   store = createStore(new Date());
   health = createHealthStore(currentUser.userId, new Date());
   chatHistory = [];
@@ -189,36 +227,7 @@ export function resetMockState() {
   community = createCommunityStore(hospitals, currentUser, () => new Date());
 }
 
-/** Tests set this to 0. */
-export function setMockDelay(ms: number) {
-  delayMs = ms;
-}
-
-type Scenario = 'normal' | 'empty' | 'error' | 'stale' | 'race';
-const SCENARIOS: Scenario[] = ['empty', 'error', 'stale', 'race'];
-
-function scenario(): Scenario {
-  if (typeof window === 'undefined') return 'normal';
-  const value = new URLSearchParams(window.location.search).get('mock') as Scenario | null;
-  return value && SCENARIOS.includes(value) ? value : 'normal';
-}
-
-export class MockApiError extends Error {}
-
-async function respond<T>(build: () => T, empty: T): Promise<T> {
-  await new Promise((resolve) => setTimeout(resolve, delayMs));
-  const mode = scenario();
-  if (mode === 'error') throw new MockApiError('Simulated network error');
-  if (mode === 'empty') return empty;
-  return build();
-}
-
-/** Writes ignore the "empty" scenario (they act on the real in-memory store). */
-async function mutate<T>(run: () => T): Promise<T> {
-  await new Promise((resolve) => setTimeout(resolve, delayMs));
-  if (scenario() === 'error') throw new MockApiError('Simulated network error');
-  return run();
-}
+export { MockApiError, setMockDelay };
 
 const isoDate = (d: Date) => {
   const y = d.getFullYear();
@@ -246,6 +255,10 @@ function buildForecastRun(now: Date): ForecastRun {
   // Never in the future (before 06:00 the latest run is yesterday's).
   if (generatedAt > now) generatedAt.setDate(generatedAt.getDate() - 1);
   // ?mock=stale: pretend the last model run was two days ago.
+  // A forecast run started from the admin portal replaces the scheduled 06:00 run.
+  if (staff.forecastGeneratedAt && new Date(staff.forecastGeneratedAt) > generatedAt) {
+    generatedAt.setTime(new Date(staff.forecastGeneratedAt).getTime());
+  }
   if (scenario() === 'stale') generatedAt.setDate(generatedAt.getDate() - 2);
   const days = Array.from({ length: 7 }, (_, i) => {
     const d = new Date(now);
@@ -342,7 +355,7 @@ function buildDrivers(divisionId: DivisionId, now: Date): DivisionDrivers {
 
 /** The assistant "thinks" for 600–1200 ms (0 in tests). */
 async function think() {
-  const ms = delayMs === 0 ? 0 : 600 + Math.round(Math.random() * 600);
+  const ms = getMockDelay() === 0 ? 0 : 600 + Math.round(Math.random() * 600);
   await new Promise((resolve) => setTimeout(resolve, ms));
 }
 
@@ -357,13 +370,13 @@ function nextDays(now: Date, count: number): string[] {
 export const mockApi = {
   getDivisions: () => respond<Division[]>(() => divisions, []),
 
-  getCurrentUser: () => respond<User>(() => ({ ...currentUser }), currentUser),
+  getCurrentUser: () => respond<User>(me, currentUser),
 
   /** Dev only: switch the demo account (citizen ↔ donor). */
   setDemoRole: (role: DemoRole) =>
     mutate<User>(() => {
       activateDemoAccount(role);
-      return { ...currentUser };
+      return me();
     }),
 
   getLatestForecast: () =>
@@ -376,9 +389,11 @@ export const mockApi = {
   getBedSummary: (divisionId: DivisionId) =>
     respond<BedSummary | null>(() => {
       const ids = new Set(
-        hospitals.filter((h) => h.divisionId === divisionId).map((h) => h.hospitalId),
+        hospitals
+          .filter((h) => h.divisionId === divisionId && staff.isHospitalActive(h.hospitalId))
+          .map((h) => h.hospitalId),
       );
-      const beds = bedAvailability(new Date()).filter((b) => ids.has(b.hospitalId));
+      const beds = currentBeds(new Date()).filter((b) => ids.has(b.hospitalId));
       if (beds.length === 0) return null;
       return {
         divisionId,
@@ -489,7 +504,7 @@ export const mockApi = {
       return { entryId };
     }),
 
-  getLabs: () => respond<Lab[]>(() => labs, []),
+  getLabs: () => respond<Lab[]>(activeLabs, []),
 
   sendChatMessage: async (text: string, ctx: ChatContext): Promise<ChatReply> => {
     await think();
@@ -498,7 +513,7 @@ export const mockApi = {
     return answerQuestion(text, ctx, {
       divisions,
       hospitals: hospitalSummaries(now),
-      labs,
+      labs: activeLabs(),
       doctors,
       listSlots: (doctorId, day) => store.listSlots(doctorId, day, now),
       days: nextDays(now, 7),
@@ -526,7 +541,11 @@ export const mockApi = {
       return { messageId };
     }),
 
-  getDonors: () => respond<DonorListing[]>(() => community.listDonors(currentUser.userId), []),
+  getDonors: () =>
+    respond<DonorListing[]>(
+      () => community.listDonors(currentUser.userId).filter((d) => staff.isDonorActive(d.donorId)),
+      [],
+    ),
 
   getMyDonorProfile: () =>
     respond<DonorProfile | null>(() => community.getProfile(currentUser.userId), null),

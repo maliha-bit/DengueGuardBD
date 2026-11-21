@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { ChevronDown, FlaskConical, LogIn, LogOut, UserRound } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { USE_MOCK } from '@/api/client';
+import { DEMO_ACCOUNT_IDS, DEMO_ACCOUNTS, type DemoAccountId } from '@/api/mock/staffStore';
 import { useCurrentUser, useSetDemoRole } from '@/api/queries';
 import type { Role } from '@/api/types';
 import { useSession } from '@/app/session';
@@ -11,16 +12,16 @@ import { useLocale } from '@/lib/useLocale';
 import { useMediaQuery } from '@/lib/useMediaQuery';
 import { Avatar } from './Avatar';
 
-/** Roles the demo switcher can use now; staff portals come in later phases. */
-const DEMO_ROLES: Role[] = [
-  'citizen',
-  'donor',
-  'hospital_staff',
-  'lab_staff',
-  'authority',
-  'admin',
-];
-const SWITCHABLE: Role[] = ['citizen', 'donor'];
+import { isStaffRole, PORTAL_PATH } from '@/lib/access';
+
+/** The demo account behind the logged-in user (falls back to the role's main account). */
+function accountOf(userId: string, role: Role): DemoAccountId {
+  return (
+    DEMO_ACCOUNT_IDS.find((id) => DEMO_ACCOUNTS[id].userId === userId) ??
+    DEMO_ACCOUNT_IDS.find((id) => DEMO_ACCOUNTS[id].role === role) ??
+    'citizen'
+  );
+}
 
 /** Avatar initials + name + role; opens the user menu. Guests see "Log in". */
 export function UserChip() {
@@ -73,7 +74,13 @@ export function UserChip() {
         </span>
         <ChevronDown aria-hidden="true" className="hidden h-4 w-4 text-brand-muted sm:block" />
       </button>
-      <UserMenu open={open} onClose={() => setOpen(false)} role={user.role} name={name} />
+      <UserMenu
+        open={open}
+        onClose={() => setOpen(false)}
+        role={user.role}
+        account={accountOf(user.userId, user.role)}
+        name={name}
+      />
     </>
   );
 }
@@ -82,11 +89,13 @@ function UserMenu({
   open,
   onClose,
   role,
+  account,
   name,
 }: {
   open: boolean;
   onClose: () => void;
   role: Role;
+  account: DemoAccountId;
   name: string;
 }) {
   const { t } = useLocale();
@@ -94,22 +103,30 @@ function UserMenu({
   const { signOut } = useSession();
   const setRole = useSetDemoRole();
   const wide = useMediaQuery('(min-width: 768px)');
-  // Show the chosen role straight away while the switch is saving (no flicker back).
-  const [chosen, setChosen] = useState<Role | null>(null);
-  const shownRole = chosen ?? role;
+  const navigate = useNavigate();
+  const { pathname } = useLocation();
+  // Show the chosen account straight away while the switch is saving (no flicker back).
+  const [chosen, setChosen] = useState<DemoAccountId | null>(null);
+  const shown = chosen ?? account;
 
-  const choose = (next: Role) => {
-    if (next === role || !SWITCHABLE.includes(next)) return;
+  const choose = (next: DemoAccountId) => {
+    if (next === account) return;
     setChosen(next);
-    setRole.mutate(next as 'citizen' | 'donor', {
+    setRole.mutate(next, {
       onSettled: () => setChosen(null),
-      onSuccess: () => {
-        toast({ tone: 'success', message: t('userMenu.switched', { role: t(`roles.${next}`) }) });
+      onSuccess: (user) => {
+        toast({ tone: 'success', message: t('userMenu.switched', { role: accountLabel(next) }) });
         onClose();
+        // Staff land on their portal; leaving a portal goes back to the citizen dashboard.
+        if (isStaffRole(user.role)) navigate(PORTAL_PATH[user.role]);
+        else if (pathname.startsWith('/staff')) navigate('/');
       },
       onError: () => toast({ tone: 'error', message: t('userMenu.switchError') }),
     });
   };
+
+  const accountLabel = (id: DemoAccountId) =>
+    id === 'hospital_staff_new' ? t('userMenu.newSignup') : t(`roles.${DEMO_ACCOUNTS[id].role}`);
 
   return (
     <Sheet
@@ -142,14 +159,12 @@ function UserMenu({
           </p>
           <p className="mb-3 mt-1 text-xs text-brand-muted">{t('userMenu.demoHint')}</p>
           <div className="flex flex-col gap-1.5">
-            {DEMO_ROLES.map((option) => {
-              const enabled = SWITCHABLE.includes(option);
+            {DEMO_ACCOUNT_IDS.map((option) => {
               return (
                 <label
                   key={option}
                   className={cn(
-                    'flex min-h-touch items-center gap-3 rounded-2xl bg-white px-4 text-sm',
-                    enabled ? 'cursor-pointer' : 'cursor-not-allowed opacity-60',
+                    'flex min-h-touch cursor-pointer items-center gap-3 rounded-2xl bg-white px-4 text-sm',
                     'has-[:focus-visible]:outline has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-brand-ink has-[:checked]:ring-1 has-[:checked]:ring-brand-ink',
                   )}
                 >
@@ -157,15 +172,12 @@ function UserMenu({
                     type="radio"
                     name="demo-role"
                     value={option}
-                    checked={option === shownRole}
-                    disabled={!enabled || setRole.isPending}
+                    checked={option === shown}
+                    disabled={setRole.isPending}
                     onChange={() => choose(option)}
                     className="h-5 w-5 accent-brand-ink focus:outline-none"
                   />
-                  <span className="flex-1">{t(`roles.${option}`)}</span>
-                  {!enabled && (
-                    <span className="text-xs text-brand-muted">{t('userMenu.later')}</span>
-                  )}
+                  <span className="flex-1">{accountLabel(option)}</span>
                 </label>
               );
             })}

@@ -37,6 +37,17 @@ export interface NavItem {
   badge?: NavBadge;
 }
 
+/** A resolved navigation entry for the sidebar / bottom bar (label already translated). */
+export interface ShellNavItem {
+  key: string;
+  to: string;
+  icon: LucideIcon;
+  label: string;
+  count?: number;
+  /** Match the path exactly (for portal home pages). */
+  end?: boolean;
+}
+
 export const NAV_ITEMS: NavItem[] = [
   { key: 'dashboard', to: '/', icon: LayoutDashboard, badge: 'alerts' },
   { key: 'riskMap', to: '/risk', icon: Map },
