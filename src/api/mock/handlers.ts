@@ -120,6 +120,22 @@ function createStore(now: Date): BookingStore {
 }
 
 let store = createStore(new Date());
+/**
+ * Demo accounts, one per role, so both sides of a donor request can be tried in one browser:
+ * the citizen account requests, the donor account accepts. Switching the demo role switches
+ * the active account. (Staff roles get accounts with their portals in later phases.)
+ */
+export type DemoRole = 'citizen' | 'donor';
+const DEMO_ACCOUNTS: Record<DemoRole, { userId: string }> = {
+  citizen: { userId: 'u-demo-1' },
+  donor: { userId: 'u-demo-2' },
+};
+
+function activateDemoAccount(role: DemoRole) {
+  currentUser.userId = DEMO_ACCOUNTS[role].userId;
+  currentUser.role = role;
+}
+
 let health = createHealthStore(currentUser.userId, new Date());
 /** Saved chat for the logged-in demo user, and thumbs up/down per assistant message. */
 let community = createCommunityStore(hospitals, currentUser, () => new Date());
@@ -165,11 +181,11 @@ let delayMs = 400;
 /** Tests call this between cases so in-memory changes do not leak. */
 export function resetMockState() {
   currentUser.alertDivisions = [];
+  activateDemoAccount('citizen');
   store = createStore(new Date());
   health = createHealthStore(currentUser.userId, new Date());
   chatHistory = [];
   chatFeedback = new Map();
-  currentUser.role = 'citizen';
   community = createCommunityStore(hospitals, currentUser, () => new Date());
 }
 
@@ -343,6 +359,13 @@ export const mockApi = {
 
   getCurrentUser: () => respond<User>(() => ({ ...currentUser }), currentUser),
 
+  /** Dev only: switch the demo account (citizen ↔ donor). */
+  setDemoRole: (role: DemoRole) =>
+    mutate<User>(() => {
+      activateDemoAccount(role);
+      return { ...currentUser };
+    }),
+
   getLatestForecast: () =>
     respond<ForecastRun>(() => buildForecastRun(new Date()), {
       generatedAt: new Date().toISOString(),
@@ -511,9 +534,10 @@ export const mockApi = {
   /** Creating a profile makes the demo user a donor (and simulates incoming requests). */
   saveDonorProfile: (input: DonorProfileInput) =>
     mutate<DonorProfile>(() => {
+      // Becoming a donor switches to the demo donor account.
+      activateDemoAccount('donor');
       const isNew = community.getProfile(currentUser.userId) === null;
       const profile = community.saveProfile(currentUser.userId, currentUser.name, input);
-      currentUser.role = 'donor';
       if (isNew) seedInbox(community, profile.donorId, hospitals, new Date());
       return profile;
     }),

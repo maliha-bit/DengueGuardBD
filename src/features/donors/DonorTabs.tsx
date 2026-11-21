@@ -13,7 +13,7 @@ const TABS = [
 export function DonorTabs() {
   const { t } = useLocale();
   return (
-    <nav aria-label={t('donors.tabsLabel')} className="-mt-2 mb-5 overflow-x-auto">
+    <nav aria-label={t('donors.tabsLabel')} className="relative -mt-2 mb-5 overflow-x-auto">
       <ul className="flex gap-2">
         {TABS.map((tab) => (
           <li key={tab.key}>

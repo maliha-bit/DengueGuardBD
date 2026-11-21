@@ -64,7 +64,8 @@
     "search": "হাসপাতাল খুঁজুন",
     "division": "বিভাগ",
     "profileLabel": "{{name}}, {{role}} — প্রোফাইল খুলুন",
-    "notificationsUnread": "বিজ্ঞপ্তি, {{count}}টি অপঠিত"
+    "notificationsUnread": "বিজ্ঞপ্তি, {{count}}টি অপঠিত",
+    "userMenu": "{{name}}, {{role}} — অ্যাকাউন্ট মেনু খুলুন"
   },
   "roles": {
     "citizen": "নাগরিক",
@@ -1141,7 +1142,18 @@
       "photoAlt": "{{area}}-এর স্থানের ছবি",
       "noPhoto": "ছবি নেই",
       "meta": "{{date}} · রেফ. {{reference}}",
-      "timelineLabel": "রিপোর্টের অবস্থা"
+      "timelineLabel": "রিপোর্টের অবস্থা",
+      "statusLabel": "অবস্থা"
     }
+  },
+  "userMenu": {
+    "title": "অ্যাকাউন্ট",
+    "profile": "প্রোফাইল খুলুন",
+    "demoRole": "ডেমো ভূমিকা",
+    "demoHint": "শুধু ডেভেলপমেন্টের জন্য। প্রতিটি ভূমিকা আলাদা পরীক্ষামূলক অ্যাকাউন্ট, তাই দাতা অনুরোধের দুই দিকই দেখতে পারবেন।",
+    "later": "পরের ধাপে",
+    "switched": "ডেমো ভূমিকা: {{role}}",
+    "switchError": "ভূমিকা বদলানো যায়নি। আবার চেষ্টা করুন।",
+    "logOut": "লগ আউট (ডেমো)"
   }
 }

@@ -115,6 +115,10 @@ function ReportCard({ report }: { report: BreedingReport }) {
         <div className="flex flex-wrap items-center gap-2">
           <h2 className="font-semibold">{report.areaName}</h2>
           <Badge tone="lavender">{t(`reports.siteTypes.${report.siteType}`)}</Badge>
+          <Badge tone={report.status === 'rejected' ? 'neutral' : 'lime'} className="ml-auto">
+            <span className="sr-only">{t('reports.list.statusLabel')}: </span>
+            <span data-testid="report-status">{t(`reports.status.${report.status}`)}</span>
+          </Badge>
         </div>
         <p className="mt-0.5 flex items-center gap-1.5 text-sm text-brand-muted">
           <MapPin aria-hidden="true" className="h-4 w-4" />

@@ -77,6 +77,10 @@ export const api = {
 
   getCurrentUser: (): Promise<User> => (USE_MOCK ? mockApi.getCurrentUser() : http('/me')),
 
+  /** Development only: switch the mock logged-in role. The real backend has no such endpoint. */
+  setDemoRole: (role: 'citizen' | 'donor'): Promise<User> =>
+    USE_MOCK ? mockApi.setDemoRole(role) : Promise.reject(new ApiError('Demo only', 400)),
+
   getLatestForecast: (): Promise<ForecastRun> =>
     USE_MOCK ? mockApi.getLatestForecast() : http('/forecasts/latest'),
 

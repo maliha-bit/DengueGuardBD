@@ -64,7 +64,8 @@
     "search": "Search hospitals",
     "division": "Division",
     "profileLabel": "{{name}}, {{role}} — open profile",
-    "notificationsUnread": "Notifications, {{count}} unread"
+    "notificationsUnread": "Notifications, {{count}} unread",
+    "userMenu": "{{name}}, {{role}} — open account menu"
   },
   "roles": {
     "citizen": "Citizen",
@@ -1141,7 +1142,18 @@
       "photoAlt": "Photo of the site at {{area}}",
       "noPhoto": "No photo",
       "meta": "{{date}} · Ref. {{reference}}",
-      "timelineLabel": "Report status"
+      "timelineLabel": "Report status",
+      "statusLabel": "Status"
     }
+  },
+  "userMenu": {
+    "title": "Account",
+    "profile": "Open profile",
+    "demoRole": "Demo role",
+    "demoHint": "Development only. Each role is a separate test account, so you can try both sides of a donor request.",
+    "later": "Later phase",
+    "switched": "Demo role: {{role}}",
+    "switchError": "Couldn't switch the role. Try again.",
+    "logOut": "Log out (demo)"
   }
 }

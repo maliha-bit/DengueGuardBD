@@ -11,6 +11,7 @@ import type {
   TriageAnswers,
   TriageOutcome,
   TrendPeriod,
+  User,
 } from './types';
 
 export const queryKeys = {
@@ -248,7 +249,11 @@ export function useSaveDonorProfile() {
     mutationFn: (input: DonorProfileInput) => api.saveDonorProfile(input),
     onSuccess: (profile) => {
       queryClient.setQueryData(queryKeys.donorProfile, profile);
-      // The demo role becomes "donor" and the inbox may have new requests.
+      // The demo role becomes "donor": show it at once (the refetch below confirms it).
+      queryClient.setQueryData<User>(queryKeys.me, (user) =>
+        user ? { ...user, role: 'donor', userId: profile.userId } : user,
+      );
+      // The inbox may have new requests.
       void queryClient.invalidateQueries({ queryKey: queryKeys.me, exact: true });
       void queryClient.invalidateQueries({ queryKey: queryKeys.donorInbox });
       void queryClient.invalidateQueries({ queryKey: queryKeys.donors });
@@ -320,5 +325,19 @@ export function useCreateBreedingReport() {
   return useMutation({
     mutationFn: (input: BreedingReportInput) => api.createBreedingReport(input),
     onSettled: () => queryClient.invalidateQueries({ queryKey: queryKeys.breedingReports }),
+  });
+}
+
+/** Dev only: switch the demo role; every cached query belongs to the old account. */
+export function useSetDemoRole() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (role: 'citizen' | 'donor') => api.setDemoRole(role),
+    onSuccess: async (user) => {
+      queryClient.setQueryData(queryKeys.me, user);
+      await queryClient.invalidateQueries({
+        predicate: (query) => query.queryKey[0] !== 'me' || query.queryKey.length > 1,
+      });
+    },
   });
 }

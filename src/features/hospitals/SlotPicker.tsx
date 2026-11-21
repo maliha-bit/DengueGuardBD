@@ -38,7 +38,7 @@ export function SlotPicker({
         <div
           role="group"
           aria-labelledby={`dates-${doctor.doctorId}`}
-          className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-1"
+          className="relative -mx-1 flex gap-2 overflow-x-auto px-1 pb-1"
         >
           {days.map((day, i) => {
             const available = isDoctorAvailable(doctor, day);
