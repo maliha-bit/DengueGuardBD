@@ -28,6 +28,8 @@ export const queryKeys = {
   lastTriage: ['me', 'triage', 'latest'] as const,
   feverLog: ['me', 'fever-log'] as const,
   checklist: ['me', 'prevention-checklist'] as const,
+  labs: ['labs'] as const,
+  chatHistory: ['me', 'chat'] as const,
 };
 
 export const useDivisions = () =>
@@ -210,3 +212,16 @@ export function useSaveChecklist() {
     onSuccess: (list) => queryClient.setQueryData(queryKeys.checklist, list),
   });
 }
+
+/* ---------- Labs and chatbot (Phase 8) ---------- */
+
+export const useLabs = () => useQuery({ queryKey: queryKeys.labs, queryFn: api.getLabs });
+
+/** Saved chat (logged-in users only). Read once per visit; the page keeps its own state. */
+export const useChatHistory = (enabled: boolean) =>
+  useQuery({
+    queryKey: queryKeys.chatHistory,
+    queryFn: api.getChatHistory,
+    enabled,
+    staleTime: Infinity,
+  });

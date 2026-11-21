@@ -169,10 +169,24 @@ describe('Hospital detail and booking (/hospitals/:id)', () => {
       (b) => !b.hasAttribute('disabled'),
     )!;
     const [hh = '09', mm = '00'] = (slot.textContent?.match(/(\d{1,2}):(\d{2})/) ?? []).slice(1);
-    // Meanwhile the user books another Dhaka doctor at exactly the same time.
-    mockBookingStore().book({
+    // Meanwhile the user books another Dhaka doctor at exactly the same time. Seeded demand
+    // depends on the date, so pick a doctor whose slot at that time still has room.
+    const store = mockBookingStore();
+    const time = `${hh.padStart(2, '0')}:${mm}`;
+    const otherSlotId = ['d-h-dhaka-4-1', 'd-h-dhaka-2-1', 'd-h-dhaka-3-1', 'd-h-dhaka-5-1']
+      .map((doctorId) => makeSlotId(doctorId, toIsoDate(day), time))
+      .find((slotId) => {
+        try {
+          const other = store.getSlot(slotId);
+          return other.booked < other.capacity;
+        } catch {
+          return false; // doctor not working that day
+        }
+      });
+    expect(otherSlotId).toBeDefined();
+    store.book({
       userId: 'u-demo-1',
-      slotId: makeSlotId('d-h-dhaka-4-1', toIsoDate(day), `${hh.padStart(2, '0')}:${mm}`),
+      slotId: otherSlotId!,
       patientName: 'Ayesha Rahman',
       now: new Date(),
     });

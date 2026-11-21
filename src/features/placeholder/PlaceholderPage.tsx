@@ -1,7 +1,6 @@
 import { ArrowLeft, Construction } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { NAV_ITEMS, type NavKey } from '@/app/navigation';
-import { Disclaimer } from '@/components/Disclaimer';
 import { PageHeader } from '@/components/PageHeader';
 import { buttonClasses, Card, EmptyState, IconChip } from '@/components/ui';
 import { useLocale } from '@/lib/useLocale';
@@ -16,9 +15,6 @@ export type PlaceholderKey = Exclude<
   | 'homeCare'
   | 'feverLog'
 >;
-
-/** Medical screens must show the non-diagnostic notice (NFR08). */
-const MEDICAL: PlaceholderKey[] = ['chatbot'];
 
 /** Temporary page for sections built in later phases. */
 export function PlaceholderPage({ page }: { page: PlaceholderKey }) {
@@ -42,7 +38,6 @@ export function PlaceholderPage({ page }: { page: PlaceholderKey }) {
           }
         />
       </Card>
-      {MEDICAL.includes(page) && <Disclaimer className="mt-6" />}
     </>
   );
 }

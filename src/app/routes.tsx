@@ -4,6 +4,7 @@ import { SkeletonCard } from '@/components/ui';
 import DashboardPage from '@/features/dashboard/DashboardPage';
 import { PlaceholderPage, type PlaceholderKey } from '@/features/placeholder/PlaceholderPage';
 import AppointmentsPage from '@/features/appointments/AppointmentsPage';
+import ChatbotPage from '@/features/chatbot/ChatbotPage';
 import FeverLogPage from '@/features/fever-log/FeverLogPage';
 import HomeCarePage from '@/features/homecare/HomeCarePage';
 import HospitalDetailPage from '@/features/hospitals/HospitalDetailPage';
@@ -26,6 +27,7 @@ const BUILT_PAGES: NavKey[] = [
   'symptomChecker',
   'homeCare',
   'feverLog',
+  'chatbot',
 ];
 
 const placeholderRoutes: RouteObject[] = NAV_ITEMS.filter(
@@ -50,6 +52,7 @@ export const routes: RouteObject[] = [
       { path: 'symptom-checker', element: <Navigate to="/symptoms" replace /> },
       { path: 'home-care', element: <HomeCarePage /> },
       { path: 'fever-log', element: <FeverLogPage /> },
+      { path: 'chatbot', element: <ChatbotPage /> },
       ...placeholderRoutes,
       { path: '*', element: <NotFoundPage /> },
     ],

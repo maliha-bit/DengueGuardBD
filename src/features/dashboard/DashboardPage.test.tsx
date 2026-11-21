@@ -106,7 +106,6 @@ describe('Dashboard (/)', () => {
 
 describe('Placeholder routes', () => {
   it.each([
-    ['/chatbot', 'Chatbot'],
     ['/donors', 'Donors'],
     ['/labs', 'Labs'],
     ['/report', 'Report breeding site'],
@@ -115,11 +114,6 @@ describe('Placeholder routes', () => {
     renderApp(path);
     expect(screen.getByRole('heading', { level: 1, name: title })).toBeInTheDocument();
     expect(screen.getByText('Coming in a later phase')).toBeInTheDocument();
-  });
-
-  it('medical pages show the non-diagnostic notice', () => {
-    renderApp('/chatbot');
-    expect(screen.getByText('Follows DGHS/WHO guidance. Not a diagnosis.')).toBeInTheDocument();
   });
 
   it('unknown paths show the not-found page', () => {
