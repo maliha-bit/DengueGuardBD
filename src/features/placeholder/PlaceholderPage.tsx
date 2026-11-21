@@ -1,20 +1,11 @@
 import { ArrowLeft, Construction } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { NAV_ITEMS, type NavKey } from '@/app/navigation';
+import { NAV_ITEMS } from '@/app/navigation';
 import { PageHeader } from '@/components/PageHeader';
 import { buttonClasses, Card, EmptyState, IconChip } from '@/components/ui';
 import { useLocale } from '@/lib/useLocale';
 
-export type PlaceholderKey = Exclude<
-  NavKey,
-  | 'dashboard'
-  | 'riskMap'
-  | 'hospitals'
-  | 'appointments'
-  | 'symptomChecker'
-  | 'homeCare'
-  | 'feverLog'
->;
+export type PlaceholderKey = 'profile';
 
 /** Temporary page for sections built in later phases. */
 export function PlaceholderPage({ page }: { page: PlaceholderKey }) {

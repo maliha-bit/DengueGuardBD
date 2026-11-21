@@ -88,3 +88,11 @@ export function parseLocaleNumber(value: string): number {
   if (!/^-?\d+(\.\d+)?$/.test(latin)) return Number.NaN;
   return Number(latin);
 }
+
+const BANGLA_DIGITS = '০১২৩৪৫৬৭৮৯';
+
+/** Show the digits inside a code or phone number in the UI language ("01XXX-XXX-123"). */
+export function localDigits(value: string, lang: string): string {
+  if (lang !== 'bn') return value;
+  return value.replace(/[0-9]/g, (digit) => BANGLA_DIGITS[Number(digit)] ?? digit);
+}

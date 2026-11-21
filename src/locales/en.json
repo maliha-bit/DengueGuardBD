@@ -859,5 +859,289 @@
       "bookThis": "Book this time",
       "otherTimes": "Other times"
     }
+  },
+  "timeline": {
+    "done": "done",
+    "current": "current step",
+    "upcoming": "not yet",
+    "failed": "stopped"
+  },
+  "donors": {
+    "title": "Donors",
+    "subtitle": "Find blood and platelet donors near you",
+    "tabsLabel": "Donor pages",
+    "tabs": {
+      "find": "Find donors",
+      "requests": "My requests",
+      "profile": "Donor profile",
+      "inbox": "Donor inbox"
+    },
+    "filtersLabel": "Donor filters",
+    "bloodGroup": "Blood group",
+    "anyGroup": "Any blood group",
+    "donationType": "Donation type",
+    "anyType": "Any type",
+    "types": {
+      "whole_blood": "Whole blood",
+      "platelets": "Platelets",
+      "both": "Whole blood and platelets"
+    },
+    "district": "District",
+    "availableNow": "Available now",
+    "emptyTitle": "No donors yet",
+    "emptyMessage": "No donors have registered in the app yet.",
+    "noMatchTitle": "No donors match",
+    "noMatchMessage": "Try another blood group or district, or turn off \"Available now\".",
+    "resultsLabel": "Donors",
+    "count_one": "{{total}} donor",
+    "count_other": "{{total}} donors",
+    "loginTitle": "Log in to send a request",
+    "loginBody": "Log in to request this donor. Their contact stays hidden until they accept.",
+    "cardLabel": "Donor, {{group}}, {{district}}",
+    "available": "Available",
+    "notAvailable": "Not available",
+    "lastActive": "Last active",
+    "lastActiveAgo": "Active {{time}}",
+    "phone": "Phone",
+    "phoneHidden": "hidden until accepted",
+    "requestButton": "Request",
+    "request": {
+      "title": "Request a {{group}} donor",
+      "privacy": "The donor sees your request and the hospital. You get their phone number only if they accept.",
+      "send": "Send request",
+      "patientGroup": "Patient blood group",
+      "units": "Units needed",
+      "hospital": "Hospital",
+      "hospitalPlaceholder": "Choose a hospital",
+      "neededBy": "Needed by",
+      "contact": "Your contact number",
+      "contactHint": "Shared with the donor only after they accept",
+      "note": "Note for the donor",
+      "sentTitle": "Request sent",
+      "sentBody": "We'll show the donor's contact in My requests as soon as they accept.",
+      "unavailable": "This donor is not available right now. Please choose another donor.",
+      "error": "Something went wrong. Please try again.",
+      "errors": {
+        "hospital": "Choose a hospital",
+        "units": "Enter a whole number from 1 to {{max}}",
+        "neededBy": "Choose when the blood is needed",
+        "neededByPast": "Choose a time in the future",
+        "neededByFar": "Choose a time within {{days}} days",
+        "phone": "Enter a valid mobile number (11 digits, starts with 01)",
+        "note": "Keep the note under 300 characters"
+      }
+    },
+    "myRequests": {
+      "title": "My requests",
+      "subtitle": "Requests you sent to donors",
+      "loginMessage": "Log in to see your donor requests.",
+      "emptyTitle": "No requests yet",
+      "emptyMessage": "Find a donor and send a request when someone needs blood or platelets.",
+      "cardLabel": "Request for {{group}} blood",
+      "toDonor": "{{group}} donor in {{district}}",
+      "details": "Patient {{group}} · {{units}} unit(s) · needed by {{time}}",
+      "donorContact": "Donor's contact",
+      "contactHidden": "The donor's contact appears here once they accept.",
+      "markFulfilled": "Mark as donated",
+      "fulfilledToast": "Marked as donated. Thank you!"
+    },
+    "status": {
+      "sent": "Sent",
+      "accepted": "Accepted",
+      "declined": "Declined",
+      "fulfilled": "Donated",
+      "expired": "Expired"
+    },
+    "timeline": {
+      "label": "Request status",
+      "waiting": "Waiting for the donor",
+      "outcome": "Donated or expired"
+    },
+    "profile": {
+      "title": "Donor profile",
+      "subtitle": "Become a blood or platelet donor and choose when you're available",
+      "loginMessage": "Log in to become a donor or update your donor profile.",
+      "staffTitle": "Not available for staff accounts",
+      "staffMessage": "Switch to a citizen account to register as a donor.",
+      "createTitle": "Become a donor",
+      "editTitle": "Your donor details",
+      "lastDonation": "Last donation date",
+      "lastDonationHint": "Leave empty if you have never donated",
+      "phone": "Mobile number",
+      "shareAfterAccept": "Share my contact only after I accept",
+      "shareAfterAcceptHint": "People who request you see a masked number until you accept their request.",
+      "save": "Save changes",
+      "become": "Become a donor",
+      "saved": "Donor profile saved.",
+      "welcome": "Thank you! You're now registered as a donor.",
+      "saveError": "Couldn't save. Please try again.",
+      "errors": {
+        "district": "Choose your district",
+        "phone": "Enter a valid mobile number (11 digits, starts with 01)",
+        "dateFuture": "The date can't be in the future"
+      }
+    },
+    "consent": {
+      "title": "Before you become a donor",
+      "points": {
+        "hidden": "Your phone number stays hidden. Others see only a masked number such as 01XXX-XXX-123.",
+        "accept": "Your contact is shared with a requester only after you accept their request.",
+        "availability": "You choose when you are available and can turn it off at any time.",
+        "stop": "You can decline any request, and report misuse."
+      },
+      "agree": "I agree",
+      "continue": "Continue"
+    },
+    "recovery": {
+      "again": "You can donate again on {{date}}",
+      "explain": "Your body needs time to recover after a donation, so availability stays off until then."
+    },
+    "availability": {
+      "title": "Availability",
+      "label": "Available to donate",
+      "on": "Available",
+      "off": "Not available",
+      "onHint": "People can send you requests.",
+      "offHint": "You won't get new requests until you turn this on."
+    },
+    "inbox": {
+      "title": "Donor inbox",
+      "subtitle": "Requests from people who need blood or platelets",
+      "loginMessage": "Log in to see requests sent to you.",
+      "notDonorTitle": "You're not a donor yet",
+      "notDonorMessage": "Become a donor to receive requests from people who need blood or platelets.",
+      "becomeDonor": "Become a donor",
+      "emptyTitle": "No requests yet",
+      "emptyMessage": "New requests will appear here.",
+      "cardLabel": "Request for {{group}} at {{hospital}}",
+      "details": "{{units}} unit(s) · needed by {{time}}",
+      "from": "From {{name}}",
+      "requesterContact": "Requester's contact",
+      "accept": "Accept",
+      "decline": "Decline",
+      "acceptedToast": "Request accepted. You can now call the requester.",
+      "declinedToast": "Request declined."
+    },
+    "eligibility": {
+      "title": "Can you donate?",
+      "body": "Please check before you accept.",
+      "check": "I feel well, haven't donated recently, and meet the donation rules.",
+      "confirm": "Accept request",
+      "recovering": "You are still in your recovery period after your last donation, so you can't accept requests yet."
+    },
+    "misuse": {
+      "button": "Report misuse",
+      "title": "Report misuse",
+      "body": "Tell us if this request looks fake, abusive or asks for money. Our team will review it.",
+      "reason": "Reason",
+      "reasonError": "Choose a reason",
+      "note": "What happened?",
+      "submit": "Send report",
+      "sent": "Thank you. Your report was sent for review.",
+      "reasons": {
+        "fake": "Looks fake",
+        "spam": "Spam or repeated requests",
+        "abusive": "Rude or abusive",
+        "payment": "Asked for money",
+        "other": "Something else"
+      }
+    }
+  },
+  "labs": {
+    "title": "Labs",
+    "subtitle": "Find labs for NS1, IgM/IgG and CBC tests",
+    "mapLabel": "Map of labs",
+    "guideTitle": "Which test?",
+    "guide": "NS1 is most useful in the first 1–5 days of fever; IgM/IgG after day 5. Ask a doctor which test you need.",
+    "filtersLabel": "Lab filters",
+    "district": "District",
+    "test": "Test",
+    "anyTest": "Any test",
+    "homeCollection": "Home sample collection",
+    "openNow": "Open now",
+    "emptyTitle": "No labs listed",
+    "emptyMessage": "Lab information is not available right now.",
+    "noMatchTitle": "No labs match",
+    "noMatchMessage": "Try another district or test, or remove a filter.",
+    "resultsLabel": "Labs",
+    "count_one": "{{total}} lab",
+    "count_other": "{{total}} labs",
+    "open24": "Open 24 hours",
+    "openBadge": "Open now",
+    "closedBadge": "Closed now",
+    "hours": "Hours: {{hours}}",
+    "testsCaption": "Tests and prices at {{name}}",
+    "price": "Price",
+    "priceOne": "৳{{price}}",
+    "priceRange": "৳{{min}}–{{max}}",
+    "asReported": "Prices as reported by the lab (simulated data).",
+    "updated": "Updated {{time}}"
+  },
+  "reports": {
+    "loginMessage": "Log in to report breeding sites and follow what happens next.",
+    "siteTypes": {
+      "standing_water": "Standing water",
+      "drain": "Blocked drain",
+      "tyres": "Old tyres",
+      "construction": "Construction site",
+      "other": "Other"
+    },
+    "status": {
+      "submitted": "Submitted",
+      "under_review": "Under review",
+      "action_taken": "Action taken",
+      "rejected": "Rejected",
+      "outcome": "Action taken or rejected"
+    },
+    "form": {
+      "title": "Report a breeding site",
+      "subtitle": "Show the city where mosquitoes are breeding",
+      "mapLabel": "Map: tap to place the pin",
+      "pin": "Reported location",
+      "locationTitle": "Location",
+      "locationHint": "Tap the map where the site is, or use your current location.",
+      "useMyLocation": "Use my location",
+      "picked": "Pin at {{lat}}, {{lng}}",
+      "notPicked": "No location chosen yet",
+      "locationDenied": "We couldn't get your location. Tap the map to place the pin instead.",
+      "detailsTitle": "Details",
+      "photo": "Photo",
+      "photoHint": "JPG or PNG, up to {{max}} MB",
+      "photoErrors": {
+        "type": "Choose a JPG or PNG photo",
+        "size": "This photo is larger than {{max}} MB. Choose a smaller one."
+      },
+      "preview": "Photo preview",
+      "removePhoto": "Remove photo",
+      "area": "Area or road name",
+      "areaPlaceholder": "e.g. Road 7, Dhanmondi",
+      "siteType": "What did you see?",
+      "note": "Note",
+      "submit": "Submit report",
+      "privacy": "Your name is not shown to the public. City teams see the photo, location and note.",
+      "saveError": "Couldn't send the report. Please try again.",
+      "errors": {
+        "location": "Choose the location on the map or use your location",
+        "area": "Enter the area or road name (at least 3 letters)",
+        "note": "Keep the note under 300 characters"
+      }
+    },
+    "success": {
+      "title": "Report sent",
+      "body": "Thank you for helping stop dengue. We'll update the status as the team reviews it.",
+      "reference": "Reference number",
+      "another": "Report another site"
+    },
+    "list": {
+      "title": "My reports",
+      "subtitle": "Breeding sites you reported and what happened next",
+      "new": "Report a site",
+      "emptyTitle": "No reports yet",
+      "emptyMessage": "Seen standing water or a blocked drain? Report it so the city can clear it.",
+      "photoAlt": "Photo of the site at {{area}}",
+      "noPhoto": "No photo",
+      "meta": "{{date}} · Ref. {{reference}}",
+      "timelineLabel": "Report status"
+    }
   }
 }

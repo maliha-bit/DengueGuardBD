@@ -365,11 +365,20 @@ function buildLabs(): Lab[] {
         phone: `+8802000001${String(i + 1).padStart(2, '0')}`,
         location: [d.center[0] + (rand() - 0.5) * 0.05, d.center[1] + (rand() - 0.5) * 0.05],
         homeCollection: kind.type === 'private',
+        // Government labs: 08:00–20:00; private: 24 h or 07:00–23:00 (simulated).
+        openingHours:
+          kind.type === 'government'
+            ? { opens: '08:00', closes: '20:00' }
+            : rand() < 0.5
+              ? null
+              : { opens: '07:00', closes: '23:00' },
+        updatedAt: new Date(Date.now() - (1 + Math.floor(rand() * 47)) * 3_600_000).toISOString(),
         tests: codes.map((code) => ({
           testId: `${labId}-${code}`,
           labId,
           code,
           priceBdt: LAB_PRICES[kind.type][code],
+          priceMaxBdt: LAB_PRICES[kind.type][code] + (kind.type === 'private' ? 200 : 0),
           turnaroundHours: LAB_TURNAROUND[code],
         })),
       } satisfies Lab;

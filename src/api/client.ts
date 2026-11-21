@@ -5,6 +5,14 @@
 import { mockApi } from './mock/handlers';
 import type {
   Appointment,
+  BreedingReport,
+  BreedingReportInput,
+  DonorListing,
+  DonorProfile,
+  DonorProfileInput,
+  DonorRequest,
+  DonorRequestInput,
+  MisuseReason,
   BedSummary,
   CaseTrend,
   Division,
@@ -172,6 +180,53 @@ export const api = {
     USE_MOCK
       ? mockApi.sendChatFeedback(messageId, feedback)
       : send(`/chat/messages/${messageId}/feedback`, 'PUT', { feedback }),
+
+  getDonors: (): Promise<DonorListing[]> => (USE_MOCK ? mockApi.getDonors() : http('/donors')),
+
+  getMyDonorProfile: (): Promise<DonorProfile | null> =>
+    USE_MOCK ? mockApi.getMyDonorProfile() : http('/me/donor-profile'),
+
+  saveDonorProfile: (input: DonorProfileInput): Promise<DonorProfile> =>
+    USE_MOCK ? mockApi.saveDonorProfile(input) : send('/me/donor-profile', 'PUT', input),
+
+  setDonorAvailability: (available: boolean): Promise<DonorProfile> =>
+    USE_MOCK
+      ? mockApi.setDonorAvailability(available)
+      : send('/me/donor-profile/availability', 'PUT', { available }),
+
+  getMyDonorRequests: (): Promise<DonorRequest[]> =>
+    USE_MOCK ? mockApi.getMyDonorRequests() : http('/me/donor-requests'),
+
+  createDonorRequest: (input: DonorRequestInput): Promise<DonorRequest> =>
+    USE_MOCK ? mockApi.createDonorRequest(input) : send('/donor-requests', 'POST', input),
+
+  markDonorRequestFulfilled: (requestId: string): Promise<DonorRequest> =>
+    USE_MOCK
+      ? mockApi.markDonorRequestFulfilled(requestId)
+      : send(`/donor-requests/${requestId}/fulfilled`, 'POST'),
+
+  getDonorInbox: (): Promise<DonorRequest[]> =>
+    USE_MOCK ? mockApi.getDonorInbox() : http('/me/donor-inbox'),
+
+  respondToDonorRequest: (requestId: string, accept: boolean): Promise<DonorRequest> =>
+    USE_MOCK
+      ? mockApi.respondToDonorRequest(requestId, accept)
+      : send(`/donor-requests/${requestId}/${accept ? 'accept' : 'decline'}`, 'POST'),
+
+  reportDonorMisuse: (
+    requestId: string,
+    reason: MisuseReason,
+    note: string,
+  ): Promise<{ requestId: string }> =>
+    USE_MOCK
+      ? mockApi.reportDonorMisuse(requestId, reason, note)
+      : send(`/donor-requests/${requestId}/misuse`, 'POST', { reason, note }),
+
+  getMyBreedingReports: (): Promise<BreedingReport[]> =>
+    USE_MOCK ? mockApi.getMyBreedingReports() : http('/me/breeding-reports'),
+
+  createBreedingReport: (input: BreedingReportInput): Promise<BreedingReport> =>
+    USE_MOCK ? mockApi.createBreedingReport(input) : send('/breeding-reports', 'POST', input),
 
   getChecklist: (): Promise<PreventionChecklist> =>
     USE_MOCK ? mockApi.getChecklist() : http('/me/prevention-checklist'),

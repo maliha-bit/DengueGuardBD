@@ -19,7 +19,7 @@ const ACTIONS: Array<{ key: ActionKey; to: string; icon: LucideIcon }> = [
   { key: 'hospital', to: '/hospitals', icon: Hospital },
   { key: 'lab', to: '/labs', icon: FlaskConical },
   { key: 'donor', to: '/donors', icon: Droplet },
-  { key: 'report', to: '/report', icon: MapPinPlus },
+  { key: 'report', to: '/reports/new', icon: MapPinPlus },
   { key: 'chatbot', to: '/chatbot', icon: MessageCircle },
 ];
 
