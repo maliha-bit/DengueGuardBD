@@ -8,11 +8,17 @@ import { useLocale } from '@/lib/useLocale';
 
 export type PlaceholderKey = Exclude<
   NavKey,
-  'dashboard' | 'riskMap' | 'hospitals' | 'appointments'
+  | 'dashboard'
+  | 'riskMap'
+  | 'hospitals'
+  | 'appointments'
+  | 'symptomChecker'
+  | 'homeCare'
+  | 'feverLog'
 >;
 
 /** Medical screens must show the non-diagnostic notice (NFR08). */
-const MEDICAL: PlaceholderKey[] = ['symptomChecker', 'homeCare', 'chatbot'];
+const MEDICAL: PlaceholderKey[] = ['chatbot'];
 
 /** Temporary page for sections built in later phases. */
 export function PlaceholderPage({ page }: { page: PlaceholderKey }) {

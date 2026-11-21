@@ -44,7 +44,7 @@ describe('Dashboard (/)', () => {
     ).toBeInTheDocument();
     expect(screen.getByRole('link', { name: /Check symptoms/ })).toHaveAttribute(
       'href',
-      '/symptom-checker',
+      '/symptoms',
     );
     expect(screen.getByText('Not a diagnosis. Follow DGHS guidance.')).toBeInTheDocument();
   });
@@ -106,8 +106,6 @@ describe('Dashboard (/)', () => {
 
 describe('Placeholder routes', () => {
   it.each([
-    ['/symptom-checker', 'Symptom checker'],
-    ['/home-care', 'Home care'],
     ['/chatbot', 'Chatbot'],
     ['/donors', 'Donors'],
     ['/labs', 'Labs'],
@@ -120,7 +118,7 @@ describe('Placeholder routes', () => {
   });
 
   it('medical pages show the non-diagnostic notice', () => {
-    renderApp('/symptom-checker');
+    renderApp('/chatbot');
     expect(screen.getByText('Follows DGHS/WHO guidance. Not a diagnosis.')).toBeInTheDocument();
   });
 

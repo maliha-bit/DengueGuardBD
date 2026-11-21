@@ -156,6 +156,8 @@ function buildHospitals(): Hospital[] {
           // Deliberately invalid (local numbers never start with 0 after the area code).
           phone: `+8802000000${String(list.length + 1).padStart(2, '0')}`,
           location: [d.center[0] + (rand() - 0.5) * 0.06, d.center[1] + (rand() - 0.5) * 0.06],
+          // Simulated: government hospitals run a 24-hour emergency department.
+          hasEmergency: kind.type === 'government',
         });
       }
     });

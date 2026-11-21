@@ -9,6 +9,7 @@ import {
   MapPinPlus,
   MessageCircle,
   Stethoscope,
+  Thermometer,
   UserRound,
   type LucideIcon,
 } from 'lucide-react';
@@ -20,6 +21,7 @@ export type NavKey =
   | 'appointments'
   | 'symptomChecker'
   | 'homeCare'
+  | 'feverLog'
   | 'chatbot'
   | 'donors'
   | 'labs'
@@ -40,8 +42,9 @@ export const NAV_ITEMS: NavItem[] = [
   { key: 'riskMap', to: '/risk', icon: Map },
   { key: 'hospitals', to: '/hospitals', icon: Hospital },
   { key: 'appointments', to: '/appointments', icon: CalendarCheck, badge: 'appointments' },
-  { key: 'symptomChecker', to: '/symptom-checker', icon: Stethoscope },
+  { key: 'symptomChecker', to: '/symptoms', icon: Stethoscope },
   { key: 'homeCare', to: '/home-care', icon: HeartPulse },
+  { key: 'feverLog', to: '/fever-log', icon: Thermometer },
   { key: 'chatbot', to: '/chatbot', icon: MessageCircle },
   { key: 'donors', to: '/donors', icon: Droplet },
   { key: 'labs', to: '/labs', icon: FlaskConical },

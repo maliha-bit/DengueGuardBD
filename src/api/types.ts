@@ -1,6 +1,7 @@
 /**
  * API types. Entity names follow the SRS ERD (USER, FORECAST, HOSPITAL, BED_AVAILABILITY,
- * SLOT, APPOINTMENT, NOTIFICATION). Fields will be aligned with the FastAPI schema later.
+ * SLOT, APPOINTMENT, NOTIFICATION). Triage, fever-log and checklist types are frontend-only
+ * records until the backend schema exists. Fields will be aligned with the FastAPI schema later.
  */
 
 /** Text that the API returns in both languages. */
@@ -76,6 +77,8 @@ export interface Hospital {
   phone: string;
   /** [lat, lng] */
   location: [number, number];
+  /** Has a 24-hour emergency department. */
+  hasEmergency: boolean;
 }
 
 /** Hospital with its latest bed availability (search results). */
@@ -188,4 +191,65 @@ export interface DivisionDrivers {
 export interface PreventionTip {
   tipId: string;
   text: LocalizedText;
+}
+
+/* ---------- Symptom checker (UC14) ---------- */
+
+export type AgeGroup = 'under5' | 'child' | 'adult' | 'senior';
+export type FeverDays = 'none' | 'oneToTwo' | 'threeToFive' | 'sixPlus';
+export type Symptom = 'headache' | 'eyePain' | 'bodyAche' | 'rash' | 'nausea';
+export type WarningSign =
+  | 'bellyPain'
+  | 'vomiting'
+  | 'bleeding'
+  | 'bloodInVomitOrStool'
+  | 'drowsiness'
+  | 'coldClammySkin'
+  | 'lowUrine';
+export type RiskFactor = 'pregnancy' | 'chronicIllness';
+
+export interface TriageAnswers {
+  ageGroup: AgeGroup;
+  feverDays: FeverDays;
+  symptoms: Symptom[];
+  warningSigns: WarningSign[];
+  riskFactors: RiskFactor[];
+}
+
+export type TriageOutcome = 'monitor' | 'doctor' | 'emergency';
+
+/** Last symptom-check result, saved for logged-in users only. */
+export interface TriageResult {
+  resultId: string;
+  userId: string;
+  outcome: TriageOutcome;
+  answers: TriageAnswers;
+  createdAt: string;
+}
+
+/* ---------- Fever and fluid log (UC16) ---------- */
+
+export type UrineOutput = 'normal' | 'less';
+
+export interface FeverLogEntry {
+  entryId: string;
+  userId: string;
+  /** yyyy-mm-dd */
+  date: string;
+  /** Always stored in °C. */
+  temperatureC: number;
+  /** Glasses (~250 ml). */
+  fluidGlasses: number;
+  urine: UrineOutput;
+  warningSigns: WarningSign[];
+}
+
+export type FeverLogInput = Omit<FeverLogEntry, 'entryId' | 'userId'>;
+
+/* ---------- Prevention checklist (UC15) ---------- */
+
+export interface PreventionChecklist {
+  /** Ids of ticked checklist items. */
+  checked: string[];
+  updatedAt: string;
 }

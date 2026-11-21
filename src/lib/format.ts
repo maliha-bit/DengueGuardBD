@@ -76,3 +76,15 @@ export function initials(name: string): string {
     .join('')
     .toUpperCase();
 }
+
+/**
+ * Parse a number typed with Latin or Bangla digits ("৩৮.৫", "38,5"). Returns NaN when invalid.
+ */
+export function parseLocaleNumber(value: string): number {
+  const latin = value
+    .trim()
+    .replace(/[০-৯]/g, (digit) => String('০১২৩৪৫৬৭৮৯'.indexOf(digit)))
+    .replace(',', '.');
+  if (!/^-?\d+(\.\d+)?$/.test(latin)) return Number.NaN;
+  return Number(latin);
+}

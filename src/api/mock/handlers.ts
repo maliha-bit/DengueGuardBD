@@ -9,7 +9,13 @@ import type {
   Appointment,
   BedSummary,
   Doctor,
+  FeverLogEntry,
+  FeverLogInput,
   HospitalSummary,
+  PreventionChecklist,
+  TriageAnswers,
+  TriageOutcome,
+  TriageResult,
   Slot,
   CaseTrend,
   Division,
@@ -44,6 +50,7 @@ import {
   toIsoDate,
   type StoredAppointment,
 } from './bookingStore';
+import { createHealthStore } from './healthStore';
 
 /** Simulated demand: about 15% of sessions are already full, the rest partly booked. */
 function initialBooked(slotId: string): number {
@@ -97,6 +104,7 @@ function createStore(now: Date): BookingStore {
 }
 
 let store = createStore(new Date());
+let health = createHealthStore(currentUser.userId, new Date());
 
 /** Test helper: direct access to the in-memory booking store. */
 export const mockBookingStore = () => store;
@@ -133,6 +141,7 @@ let delayMs = 400;
 export function resetMockState() {
   currentUser.alertDivisions = [];
   store = createStore(new Date());
+  health = createHealthStore(currentUser.userId, new Date());
 }
 
 /** Tests set this to 0. */
@@ -393,4 +402,35 @@ export const mockApi = {
       const dayOfYear = Math.floor((Date.now() - start) / 86_400_000);
       return preventionTips[dayOfYear % preventionTips.length] ?? null;
     }, null),
+
+  getLastTriageResult: () =>
+    respond<TriageResult | null>(() => health.getLastTriage(currentUser.userId), null),
+
+  saveTriageResult: (outcome: TriageOutcome, answers: TriageAnswers) =>
+    mutate<TriageResult>(() => health.saveTriage(currentUser.userId, outcome, answers, new Date())),
+
+  getFeverLog: () => respond<FeverLogEntry[]>(() => health.listFeverLog(currentUser.userId), []),
+
+  addFeverLogEntry: (input: FeverLogInput) =>
+    mutate<FeverLogEntry>(() => health.addFeverEntry(currentUser.userId, input)),
+
+  updateFeverLogEntry: (entryId: string, input: FeverLogInput) =>
+    mutate<FeverLogEntry>(() => health.updateFeverEntry(currentUser.userId, entryId, input)),
+
+  deleteFeverLogEntry: (entryId: string) =>
+    mutate<{ entryId: string }>(() => {
+      health.deleteFeverEntry(currentUser.userId, entryId);
+      return { entryId };
+    }),
+
+  getChecklist: () =>
+    respond<PreventionChecklist>(() => health.getChecklist(currentUser.userId), {
+      checked: [],
+      updatedAt: '',
+    }),
+
+  saveChecklist: (checked: string[]) =>
+    mutate<PreventionChecklist>(() =>
+      health.saveChecklist(currentUser.userId, checked, new Date()),
+    ),
 };

@@ -1,6 +1,8 @@
-import { Siren } from 'lucide-react';
+import { ChevronRight, Siren } from 'lucide-react';
 import { NavLink } from 'react-router-dom';
+import { useEmergency } from '@/app/emergency';
 import { NAV_ITEMS } from '@/app/navigation';
+import { Button } from '@/components/ui';
 import { cn } from '@/lib/cn';
 import { useLocale } from '@/lib/useLocale';
 import { EmergencyNumbers } from './EmergencyNumbers';
@@ -11,6 +13,7 @@ import { useNavBadges } from './useNavBadges';
 export function Sidebar() {
   const { t, n } = useLocale();
   const badges = useNavBadges();
+  const { openEmergency } = useEmergency();
   return (
     <aside className="on-dark fixed inset-y-0 left-0 z-30 hidden w-sidebar flex-col bg-brand-sidebar px-4 py-6 md:flex">
       <NavLink to="/" className="mx-2 mb-7 rounded-full" aria-label={t('nav.dashboard')}>
@@ -66,6 +69,17 @@ export function Sidebar() {
         </div>
         <p className="mb-3 mt-1 text-xs leading-snug text-brand-ink/80">{t('emergency.body')}</p>
         <EmergencyNumbers />
+        <Button
+          variant="ghost"
+          size="sm"
+          fullWidth
+          trailingIcon={ChevronRight}
+          aria-haspopup="dialog"
+          onClick={openEmergency}
+          className="mt-1 hover:bg-black/10"
+        >
+          {t('emergency.moreHelp')}
+        </Button>
       </section>
     </aside>
   );
