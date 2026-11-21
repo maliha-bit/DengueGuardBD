@@ -1,7 +1,11 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { api } from './client';
 import type {
+  BreedingReportInput,
   DivisionId,
+  DonorProfileInput,
+  DonorRequestInput,
+  MisuseReason,
   FeverLogInput,
   PreventionChecklist,
   TriageAnswers,
@@ -30,6 +34,11 @@ export const queryKeys = {
   checklist: ['me', 'prevention-checklist'] as const,
   labs: ['labs'] as const,
   chatHistory: ['me', 'chat'] as const,
+  donors: ['donors'] as const,
+  donorProfile: ['me', 'donor-profile'] as const,
+  myDonorRequests: ['me', 'donor-requests'] as const,
+  donorInbox: ['me', 'donor-inbox'] as const,
+  breedingReports: ['me', 'breeding-reports'] as const,
 };
 
 export const useDivisions = () =>
@@ -225,3 +234,91 @@ export const useChatHistory = (enabled: boolean) =>
     enabled,
     staleTime: Infinity,
   });
+
+/* ---------- Donors and breeding-site reports (Phase 9) ---------- */
+
+export const useDonors = () => useQuery({ queryKey: queryKeys.donors, queryFn: api.getDonors });
+
+export const useMyDonorProfile = (enabled = true) =>
+  useQuery({ queryKey: queryKeys.donorProfile, queryFn: api.getMyDonorProfile, enabled });
+
+export function useSaveDonorProfile() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (input: DonorProfileInput) => api.saveDonorProfile(input),
+    onSuccess: (profile) => {
+      queryClient.setQueryData(queryKeys.donorProfile, profile);
+      // The demo role becomes "donor" and the inbox may have new requests.
+      void queryClient.invalidateQueries({ queryKey: queryKeys.me, exact: true });
+      void queryClient.invalidateQueries({ queryKey: queryKeys.donorInbox });
+      void queryClient.invalidateQueries({ queryKey: queryKeys.donors });
+    },
+  });
+}
+
+export function useSetDonorAvailability() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (available: boolean) => api.setDonorAvailability(available),
+    onSuccess: (profile) => queryClient.setQueryData(queryKeys.donorProfile, profile),
+  });
+}
+
+export const useMyDonorRequests = (enabled = true) =>
+  useQuery({
+    queryKey: queryKeys.myDonorRequests,
+    queryFn: api.getMyDonorRequests,
+    enabled,
+    staleTime: 0,
+  });
+
+export function useCreateDonorRequest() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (input: DonorRequestInput) => api.createDonorRequest(input),
+    onSettled: () => queryClient.invalidateQueries({ queryKey: queryKeys.myDonorRequests }),
+  });
+}
+
+export function useMarkDonorRequestFulfilled() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (requestId: string) => api.markDonorRequestFulfilled(requestId),
+    onSettled: () => queryClient.invalidateQueries({ queryKey: queryKeys.myDonorRequests }),
+  });
+}
+
+export const useDonorInbox = (enabled = true) =>
+  useQuery({ queryKey: queryKeys.donorInbox, queryFn: api.getDonorInbox, enabled, staleTime: 0 });
+
+export function useRespondToDonorRequest() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ requestId, accept }: { requestId: string; accept: boolean }) =>
+      api.respondToDonorRequest(requestId, accept),
+    onSettled: () => queryClient.invalidateQueries({ queryKey: queryKeys.donorInbox }),
+  });
+}
+
+export function useReportDonorMisuse() {
+  return useMutation({
+    mutationFn: (args: { requestId: string; reason: MisuseReason; note: string }) =>
+      api.reportDonorMisuse(args.requestId, args.reason, args.note),
+  });
+}
+
+export const useMyBreedingReports = (enabled = true) =>
+  useQuery({
+    queryKey: queryKeys.breedingReports,
+    queryFn: api.getMyBreedingReports,
+    enabled,
+    staleTime: 0,
+  });
+
+export function useCreateBreedingReport() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (input: BreedingReportInput) => api.createBreedingReport(input),
+    onSettled: () => queryClient.invalidateQueries({ queryKey: queryKeys.breedingReports }),
+  });
+}

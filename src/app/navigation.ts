@@ -48,7 +48,7 @@ export const NAV_ITEMS: NavItem[] = [
   { key: 'chatbot', to: '/chatbot', icon: MessageCircle },
   { key: 'donors', to: '/donors', icon: Droplet },
   { key: 'labs', to: '/labs', icon: FlaskConical },
-  { key: 'reportSite', to: '/report', icon: MapPinPlus },
+  { key: 'reportSite', to: '/reports', icon: MapPinPlus },
   { key: 'profile', to: '/profile', icon: UserRound },
 ];
 

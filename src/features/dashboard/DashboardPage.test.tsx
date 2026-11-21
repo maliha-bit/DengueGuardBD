@@ -105,12 +105,7 @@ describe('Dashboard (/)', () => {
 });
 
 describe('Placeholder routes', () => {
-  it.each([
-    ['/donors', 'Donors'],
-    ['/labs', 'Labs'],
-    ['/report', 'Report breeding site'],
-    ['/profile', 'Profile'],
-  ])('%s renders inside the shell', (path, title) => {
+  it.each([['/profile', 'Profile']])('%s renders inside the shell', (path, title) => {
     renderApp(path);
     expect(screen.getByRole('heading', { level: 1, name: title })).toBeInTheDocument();
     expect(screen.getByText('Coming in a later phase')).toBeInTheDocument();

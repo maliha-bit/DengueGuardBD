@@ -5,10 +5,17 @@ import DashboardPage from '@/features/dashboard/DashboardPage';
 import { PlaceholderPage, type PlaceholderKey } from '@/features/placeholder/PlaceholderPage';
 import AppointmentsPage from '@/features/appointments/AppointmentsPage';
 import ChatbotPage from '@/features/chatbot/ChatbotPage';
+import DonorInboxPage from '@/features/donors/DonorInboxPage';
+import DonorProfilePage from '@/features/donors/DonorProfilePage';
+import FindDonorsPage from '@/features/donors/FindDonorsPage';
+import MyRequestsPage from '@/features/donors/MyRequestsPage';
 import FeverLogPage from '@/features/fever-log/FeverLogPage';
 import HomeCarePage from '@/features/homecare/HomeCarePage';
 import HospitalDetailPage from '@/features/hospitals/HospitalDetailPage';
 import HospitalsPage from '@/features/hospitals/HospitalsPage';
+import LabsPage from '@/features/labs/LabsPage';
+import MyReportsPage from '@/features/reports/MyReportsPage';
+import NewReportPage from '@/features/reports/NewReportPage';
 import RiskMapPage from '@/features/risk/RiskMapPage';
 import SymptomCheckerPage from '@/features/triage/SymptomCheckerPage';
 import { CitizenShell } from './CitizenShell';
@@ -28,6 +35,9 @@ const BUILT_PAGES: NavKey[] = [
   'homeCare',
   'feverLog',
   'chatbot',
+  'donors',
+  'labs',
+  'reportSite',
 ];
 
 const placeholderRoutes: RouteObject[] = NAV_ITEMS.filter(
@@ -53,6 +63,14 @@ export const routes: RouteObject[] = [
       { path: 'home-care', element: <HomeCarePage /> },
       { path: 'fever-log', element: <FeverLogPage /> },
       { path: 'chatbot', element: <ChatbotPage /> },
+      { path: 'donors', element: <FindDonorsPage /> },
+      { path: 'donors/requests', element: <MyRequestsPage /> },
+      { path: 'donor/profile', element: <DonorProfilePage /> },
+      { path: 'donor/inbox', element: <DonorInboxPage /> },
+      { path: 'labs', element: <LabsPage /> },
+      { path: 'reports', element: <MyReportsPage /> },
+      { path: 'reports/new', element: <NewReportPage /> },
+      { path: 'report', element: <Navigate to="/reports/new" replace /> },
       ...placeholderRoutes,
       { path: '*', element: <NotFoundPage /> },
     ],

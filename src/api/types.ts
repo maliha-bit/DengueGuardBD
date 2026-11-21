@@ -263,8 +263,10 @@ export interface LabTest {
   testId: string;
   labId: string;
   code: LabTestCode;
-  /** Simulated price in BDT. */
+  /** Simulated lowest price in BDT, as reported by the lab. */
   priceBdt: number;
+  /** Simulated highest price in BDT (e.g. home collection or urgent report). */
+  priceMaxBdt: number;
   /** Typical time until the report is ready. */
   turnaroundHours: number;
 }
@@ -281,6 +283,10 @@ export interface Lab {
   phone: string;
   location: [number, number];
   homeCollection: boolean;
+  /** Daily opening hours ("08:00"–"22:00"); null = open 24 hours. */
+  openingHours: { opens: string; closes: string } | null;
+  /** When the lab last updated its tests and prices. */
+  updatedAt: string;
   tests: LabTest[];
 }
 
@@ -348,4 +354,95 @@ export interface ChatMessage {
   lang: ChatLang;
   content: ChatContent;
   feedback?: ChatFeedback;
+}
+
+/* ---------- Blood / platelet donors (DONOR_PROFILE, DONOR_REQUEST) ---------- */
+
+export type BloodGroup = 'A+' | 'A-' | 'B+' | 'B-' | 'AB+' | 'AB-' | 'O+' | 'O-';
+export type DonationType = 'whole_blood' | 'platelets' | 'both';
+
+/** DONOR_PROFILE — the donor's own view (includes their phone). */
+export interface DonorProfile {
+  donorId: string;
+  userId: string;
+  name: LocalizedText;
+  bloodGroup: BloodGroup;
+  donationType: DonationType;
+  divisionId: DivisionId;
+  districtId: string;
+  district: LocalizedText;
+  /** yyyy-mm-dd, or null if never donated. */
+  lastDonationDate: string | null;
+  phone: string;
+  /** Contact is shared only after the donor accepts a request. */
+  shareAfterAccept: boolean;
+  available: boolean;
+  lastActiveAt: string;
+}
+
+export type DonorProfileInput = Pick<
+  DonorProfile,
+  'bloodGroup' | 'donationType' | 'districtId' | 'lastDonationDate' | 'phone' | 'shareAfterAccept'
+>;
+
+/** Public donor card: the phone is masked by the API (e.g. 01XXX-XXX-123). */
+export type DonorListing = Omit<DonorProfile, 'phone' | 'userId' | 'shareAfterAccept'> & {
+  maskedPhone: string;
+};
+
+export type DonorRequestStatus = 'sent' | 'accepted' | 'declined' | 'fulfilled' | 'expired';
+
+export interface DonorRequestInput {
+  donorId: string;
+  patientBloodGroup: BloodGroup;
+  hospitalId: string;
+  unitsNeeded: number;
+  /** ISO timestamp. */
+  neededBy: string;
+  contactPhone: string;
+  note: string;
+}
+
+/** DONOR_REQUEST */
+export interface DonorRequest extends Omit<DonorRequestInput, 'contactPhone'> {
+  requestId: string;
+  requesterId: string;
+  requesterName: LocalizedText;
+  hospital: Hospital;
+  donor: DonorListing;
+  status: DonorRequestStatus;
+  createdAt: string;
+  respondedAt: string | null;
+  closedAt: string | null;
+  /** Donor's phone — only present once the donor has accepted. */
+  donorPhone: string | null;
+  /** Requester's phone — only present for the donor once they have accepted. */
+  contactPhone: string | null;
+}
+
+export type MisuseReason = 'fake' | 'spam' | 'abusive' | 'payment' | 'other';
+
+/* ---------- Breeding-site reports (BREEDING_REPORT) ---------- */
+
+export type BreedingSiteType = 'standing_water' | 'drain' | 'tyres' | 'construction' | 'other';
+export type BreedingReportStatus = 'submitted' | 'under_review' | 'action_taken' | 'rejected';
+
+export interface BreedingReportInput {
+  /** Data URL of the photo (mock); the backend will take a file upload. */
+  photoUrl: string | null;
+  location: [number, number];
+  areaName: string;
+  siteType: BreedingSiteType;
+  note: string;
+}
+
+/** BREEDING_REPORT */
+export interface BreedingReport extends BreedingReportInput {
+  reportId: string;
+  /** Reference number shown to the citizen, e.g. BR-2026-000123. */
+  reference: string;
+  userId: string;
+  status: BreedingReportStatus;
+  createdAt: string;
+  updatedAt: string;
 }

@@ -7,6 +7,14 @@
  */
 import type {
   Appointment,
+  BreedingReport,
+  BreedingReportInput,
+  DonorListing,
+  DonorProfile,
+  DonorProfileInput,
+  DonorRequest,
+  DonorRequestInput,
+  MisuseReason,
   BedSummary,
   ChatContext,
   ChatFeedback,
@@ -57,6 +65,7 @@ import {
   type StoredAppointment,
 } from './bookingStore';
 import { answerQuestion } from './chatService';
+import { createCommunityStore, seedInbox } from './communityStore';
 import { createHealthStore } from './healthStore';
 
 /** Simulated demand: about 15% of sessions are already full, the rest partly booked. */
@@ -113,6 +122,9 @@ function createStore(now: Date): BookingStore {
 let store = createStore(new Date());
 let health = createHealthStore(currentUser.userId, new Date());
 /** Saved chat for the logged-in demo user, and thumbs up/down per assistant message. */
+let community = createCommunityStore(hospitals, currentUser, () => new Date());
+/** Test helper: direct access to donors, requests and reports. */
+export const mockCommunityStore = () => community;
 let chatHistory: ChatMessage[] = [];
 let chatFeedback = new Map<string, ChatFeedback>();
 
@@ -157,6 +169,8 @@ export function resetMockState() {
   health = createHealthStore(currentUser.userId, new Date());
   chatHistory = [];
   chatFeedback = new Map();
+  currentUser.role = 'citizen';
+  community = createCommunityStore(hospitals, currentUser, () => new Date());
 }
 
 /** Tests set this to 0. */
@@ -488,6 +502,55 @@ export const mockApi = {
       else chatFeedback.delete(messageId);
       return { messageId };
     }),
+
+  getDonors: () => respond<DonorListing[]>(() => community.listDonors(currentUser.userId), []),
+
+  getMyDonorProfile: () =>
+    respond<DonorProfile | null>(() => community.getProfile(currentUser.userId), null),
+
+  /** Creating a profile makes the demo user a donor (and simulates incoming requests). */
+  saveDonorProfile: (input: DonorProfileInput) =>
+    mutate<DonorProfile>(() => {
+      const isNew = community.getProfile(currentUser.userId) === null;
+      const profile = community.saveProfile(currentUser.userId, currentUser.name, input);
+      currentUser.role = 'donor';
+      if (isNew) seedInbox(community, profile.donorId, hospitals, new Date());
+      return profile;
+    }),
+
+  setDonorAvailability: (available: boolean) =>
+    mutate<DonorProfile>(() => community.setAvailability(currentUser.userId, available)),
+
+  getMyDonorRequests: () => respond<DonorRequest[]>(() => community.sentBy(currentUser.userId), []),
+
+  createDonorRequest: (input: DonorRequestInput) =>
+    mutate<DonorRequest>(() =>
+      community.createRequest(currentUser.userId, currentUser.name, input),
+    ),
+
+  markDonorRequestFulfilled: (requestId: string) =>
+    mutate<DonorRequest>(() => community.markFulfilled(currentUser.userId, requestId)),
+
+  getDonorInbox: () =>
+    respond<DonorRequest[]>(
+      () => (community.getProfile(currentUser.userId) ? community.inboxOf(currentUser.userId) : []),
+      [],
+    ),
+
+  respondToDonorRequest: (requestId: string, accept: boolean) =>
+    mutate<DonorRequest>(() => community.respond(currentUser.userId, requestId, accept)),
+
+  reportDonorMisuse: (requestId: string, reason: MisuseReason, note: string) =>
+    mutate<{ requestId: string }>(() => {
+      community.reportMisuse(currentUser.userId, requestId, reason, note);
+      return { requestId };
+    }),
+
+  getMyBreedingReports: () =>
+    respond<BreedingReport[]>(() => community.reportsOf(currentUser.userId), []),
+
+  createBreedingReport: (input: BreedingReportInput) =>
+    mutate<BreedingReport>(() => community.addReport(currentUser.userId, input)),
 
   getChecklist: () =>
     respond<PreventionChecklist>(() => health.getChecklist(currentUser.userId), {
