@@ -775,5 +775,89 @@
       "confirmBody": "The entry for {{date}} will be removed from your log.",
       "confirmDelete": "Delete"
     }
+  },
+  "chatbot": {
+    "title": "Chatbot",
+    "botName": "DengueGuard Assistant",
+    "notDiagnosis": "Not a diagnosis",
+    "newChat": "New chat",
+    "welcomeTitle": "Ask me about dengue",
+    "welcomeBody": "Symptoms, medicines, fluids, tests, prevention, beds and risk near you. Type in Bangla or English.",
+    "suggestionsLabel": "Suggested questions",
+    "suggestions": {
+      "symptoms": "What are dengue symptoms?",
+      "avoid": "Which medicines should I avoid?",
+      "water": "How much water should I drink?",
+      "ns1": "Where can I get an NS1 test?",
+      "risk": "Which division has high risk today?",
+      "beds": "Find a hospital bed near me"
+    },
+    "logLabel": "Conversation",
+    "typing": "Assistant is typing…",
+    "inputLabel": "Your question",
+    "placeholder": "Type your question…",
+    "waiting": "Waiting for a reply…",
+    "send": "Send",
+    "you": "You said",
+    "copy": "Copy answer",
+    "copied": "Answer copied.",
+    "copyFailed": "Couldn't copy. Select the text instead.",
+    "helpful": "Helpful",
+    "notHelpful": "Not helpful",
+    "sourcesLabel": "Sources",
+    "sources": {
+      "dghs": "DGHS guideline",
+      "who": "WHO dengue fact sheet"
+    },
+    "fallback": "I'm not sure about that. Please talk to a doctor.",
+    "fallbackSymptoms": "Symptom checker",
+    "fallbackHospital": "Find hospital",
+    "error": "I couldn't reply just now. Check your connection and try again.",
+    "intro": {
+      "hospitals": "Here are hospitals with free beds:",
+      "risk": "Here is today's dengue risk:",
+      "labs": "Here are labs that do dengue tests:",
+      "booking": "Here is the earliest free doctor time I found:"
+    },
+    "redFlag": {
+      "title": "This may be an emergency",
+      "body": "What you describe can be a warning sign of severe dengue. Don't wait: get care now.",
+      "mentioned": "You mentioned:",
+      "openEmergency": "Open Emergency help"
+    },
+    "redFlags": {
+      "bleeding": "Bleeding (gums, nose, vomit or stool)",
+      "bellyPain": "Severe belly pain",
+      "vomiting": "Repeated vomiting",
+      "drowsiness": "Drowsiness, restlessness or confusion",
+      "breathing": "Trouble breathing",
+      "coldSkin": "Cold, clammy skin",
+      "fainting": "Fainting",
+      "lowUrine": "Very little urine"
+    },
+    "tests": {
+      "ns1": "NS1",
+      "igm_igg": "IgM/IgG",
+      "cbc": "CBC"
+    },
+    "tools": {
+      "hospitalsTitle": "Free beds in {{division}}",
+      "allHospitals": "See all hospitals",
+      "noHospitals": "No hospitals found here",
+      "beds": "General beds free: {{general}} · ICU free: {{icu}}",
+      "riskTitle": "Division risk today",
+      "riskTopTitle": "Highest risk today",
+      "viewOnMap": "View on map",
+      "labsTitle": "Dengue tests in {{division}}",
+      "allLabs": "See all labs",
+      "noLabs": "No labs found here",
+      "testPrice": "{{test}} · ৳{{price}}",
+      "homeCollection": "Home sample collection",
+      "bookingTitle": "Doctor appointment",
+      "noSlots": "No free doctor times in the next 7 days here.",
+      "bookingNote": "Nothing is booked until you confirm.",
+      "bookThis": "Book this time",
+      "otherTimes": "Other times"
+    }
   }
 }

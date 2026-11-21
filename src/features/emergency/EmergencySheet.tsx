@@ -95,7 +95,8 @@ function EmergencyContent() {
   );
 }
 
-function NearestHospital({ position }: { position: [number, number] | null }) {
+/** Nearest hospital with an emergency department (also used by the chatbot red-flag card). */
+export function NearestHospital({ position }: { position: [number, number] | null }) {
   const { t, l, n } = useLocale();
   const { divisionId } = useDivision();
   const hospitals = useHospitals();

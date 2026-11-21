@@ -11,6 +11,8 @@ import type {
   Doctor,
   Hospital,
   HospitalType,
+  Lab,
+  LabTestCode,
   LocalizedText,
   Notification,
   PreventionTip,
@@ -325,3 +327,54 @@ export const preventionTips: PreventionTip[] = [
     },
   },
 ];
+
+/* ---------- Labs (SIMULATED: fictional names, prices and numbers) ---------- */
+
+const labKinds: Array<{ name: LocalizedText; type: HospitalType }> = [
+  { name: { en: 'Diagnostic Centre', bn: 'ডায়াগনস্টিক সেন্টার' }, type: 'private' },
+  { name: { en: 'Public Health Lab', bn: 'পাবলিক হেলথ ল্যাব' }, type: 'government' },
+];
+
+const LAB_PRICES: Record<HospitalType, Record<LabTestCode, number>> = {
+  government: { ns1: 300, igm_igg: 300, cbc: 150 },
+  private: { ns1: 500, igm_igg: 500, cbc: 400 },
+};
+const LAB_TURNAROUND: Record<LabTestCode, number> = { ns1: 6, igm_igg: 24, cbc: 4 };
+
+/** Two labs per division (first two districts): 16 labs. */
+function buildLabs(): Lab[] {
+  return divisions.flatMap((div) =>
+    div.districts.slice(0, 2).map((d, i) => {
+      const kind = labKinds[i] ?? { name: { en: 'Lab', bn: 'ল্যাব' }, type: 'private' as const };
+      const labId = `l-${div.divisionId}-${i + 1}`;
+      const rand = seededRandom(hashString(labId));
+      const codes: LabTestCode[] = rand() < 0.25 ? ['ns1', 'cbc'] : ['ns1', 'igm_igg', 'cbc'];
+      const streetNo = 5 + Math.floor(rand() * 90);
+      return {
+        labId,
+        name: { en: `${d.name.en} ${kind.name.en}`, bn: `${d.name.bn} ${kind.name.bn}` },
+        type: kind.type,
+        divisionId: div.divisionId,
+        districtId: d.districtId,
+        district: d.name,
+        address: {
+          en: `${streetNo} Lab Road, ${d.name.en}`,
+          bn: `${toBanglaDigits(streetNo)} ল্যাব রোড, ${d.name.bn}`,
+        },
+        // Deliberately invalid number (simulated).
+        phone: `+8802000001${String(i + 1).padStart(2, '0')}`,
+        location: [d.center[0] + (rand() - 0.5) * 0.05, d.center[1] + (rand() - 0.5) * 0.05],
+        homeCollection: kind.type === 'private',
+        tests: codes.map((code) => ({
+          testId: `${labId}-${code}`,
+          labId,
+          code,
+          priceBdt: LAB_PRICES[kind.type][code],
+          turnaroundHours: LAB_TURNAROUND[code],
+        })),
+      } satisfies Lab;
+    }),
+  );
+}
+
+export const labs: Lab[] = buildLabs();

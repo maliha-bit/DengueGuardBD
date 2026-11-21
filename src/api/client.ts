@@ -10,10 +10,15 @@ import type {
   Division,
   DivisionDrivers,
   DivisionId,
+  ChatContext,
+  ChatFeedback,
+  ChatMessage,
+  ChatReply,
   Doctor,
   FeverLogEntry,
   FeverLogInput,
   HospitalSummary,
+  Lab,
   PreventionChecklist,
   TriageAnswers,
   TriageOutcome,
@@ -145,6 +150,28 @@ export const api = {
 
   deleteFeverLogEntry: (entryId: string): Promise<{ entryId: string }> =>
     USE_MOCK ? mockApi.deleteFeverLogEntry(entryId) : send(`/me/fever-log/${entryId}`, 'DELETE'),
+
+  getLabs: (): Promise<Lab[]> => (USE_MOCK ? mockApi.getLabs() : http('/labs')),
+
+  sendChatMessage: (text: string, ctx: ChatContext): Promise<ChatReply> =>
+    USE_MOCK ? mockApi.sendChatMessage(text, ctx) : send('/chat', 'POST', { text, ...ctx }),
+
+  getChatHistory: (): Promise<ChatMessage[]> =>
+    USE_MOCK ? mockApi.getChatHistory() : http('/me/chat'),
+
+  saveChatHistory: (messages: ChatMessage[]): Promise<{ count: number }> =>
+    USE_MOCK ? mockApi.saveChatHistory(messages) : send('/me/chat', 'PUT', { messages }),
+
+  clearChatHistory: (): Promise<{ count: number }> =>
+    USE_MOCK ? mockApi.clearChatHistory() : send('/me/chat', 'DELETE'),
+
+  sendChatFeedback: (
+    messageId: string,
+    feedback: ChatFeedback | null,
+  ): Promise<{ messageId: string }> =>
+    USE_MOCK
+      ? mockApi.sendChatFeedback(messageId, feedback)
+      : send(`/chat/messages/${messageId}/feedback`, 'PUT', { feedback }),
 
   getChecklist: (): Promise<PreventionChecklist> =>
     USE_MOCK ? mockApi.getChecklist() : http('/me/prevention-checklist'),

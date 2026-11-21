@@ -8,10 +8,15 @@
 import type {
   Appointment,
   BedSummary,
+  ChatContext,
+  ChatFeedback,
+  ChatMessage,
+  ChatReply,
   Doctor,
   FeverLogEntry,
   FeverLogInput,
   HospitalSummary,
+  Lab,
   PreventionChecklist,
   TriageAnswers,
   TriageOutcome,
@@ -38,6 +43,7 @@ import {
   doctors,
   hashString,
   hospitals,
+  labs,
   notifications,
   preventionTips,
   riskThresholds,
@@ -50,6 +56,7 @@ import {
   toIsoDate,
   type StoredAppointment,
 } from './bookingStore';
+import { answerQuestion } from './chatService';
 import { createHealthStore } from './healthStore';
 
 /** Simulated demand: about 15% of sessions are already full, the rest partly booked. */
@@ -105,6 +112,12 @@ function createStore(now: Date): BookingStore {
 
 let store = createStore(new Date());
 let health = createHealthStore(currentUser.userId, new Date());
+/** Saved chat for the logged-in demo user, and thumbs up/down per assistant message. */
+let chatHistory: ChatMessage[] = [];
+let chatFeedback = new Map<string, ChatFeedback>();
+
+/** Test helper: feedback stored by the mock. */
+export const mockChatFeedback = () => new Map(chatFeedback);
 
 /** Test helper: direct access to the in-memory booking store. */
 export const mockBookingStore = () => store;
@@ -142,6 +155,8 @@ export function resetMockState() {
   currentUser.alertDivisions = [];
   store = createStore(new Date());
   health = createHealthStore(currentUser.userId, new Date());
+  chatHistory = [];
+  chatFeedback = new Map();
 }
 
 /** Tests set this to 0. */
@@ -295,6 +310,20 @@ function buildDrivers(divisionId: DivisionId, now: Date): DivisionDrivers {
   return { divisionId, drivers, observedAt: observedAt.toISOString() };
 }
 
+/** The assistant "thinks" for 600–1200 ms (0 in tests). */
+async function think() {
+  const ms = delayMs === 0 ? 0 : 600 + Math.round(Math.random() * 600);
+  await new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+function nextDays(now: Date, count: number): string[] {
+  return Array.from({ length: count }, (_, i) => {
+    const d = new Date(now);
+    d.setDate(d.getDate() + i);
+    return isoDate(d);
+  });
+}
+
 export const mockApi = {
   getDivisions: () => respond<Division[]>(() => divisions, []),
 
@@ -421,6 +450,43 @@ export const mockApi = {
     mutate<{ entryId: string }>(() => {
       health.deleteFeverEntry(currentUser.userId, entryId);
       return { entryId };
+    }),
+
+  getLabs: () => respond<Lab[]>(() => labs, []),
+
+  sendChatMessage: async (text: string, ctx: ChatContext): Promise<ChatReply> => {
+    await think();
+    if (scenario() === 'error') throw new MockApiError('Simulated network error');
+    const now = new Date();
+    return answerQuestion(text, ctx, {
+      divisions,
+      hospitals: hospitalSummaries(now),
+      labs,
+      doctors,
+      listSlots: (doctorId, day) => store.listSlots(doctorId, day, now),
+      days: nextDays(now, 7),
+    });
+  },
+
+  getChatHistory: () => respond<ChatMessage[]>(() => chatHistory.map((m) => ({ ...m })), []),
+
+  saveChatHistory: (messages: ChatMessage[]) =>
+    mutate<{ count: number }>(() => {
+      chatHistory = messages.map((m) => ({ ...m }));
+      return { count: chatHistory.length };
+    }),
+
+  clearChatHistory: () =>
+    mutate<{ count: number }>(() => {
+      chatHistory = [];
+      return { count: 0 };
+    }),
+
+  sendChatFeedback: (messageId: string, feedback: ChatFeedback | null) =>
+    mutate<{ messageId: string }>(() => {
+      if (feedback) chatFeedback.set(messageId, feedback);
+      else chatFeedback.delete(messageId);
+      return { messageId };
     }),
 
   getChecklist: () =>

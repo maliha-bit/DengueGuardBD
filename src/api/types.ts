@@ -253,3 +253,99 @@ export interface PreventionChecklist {
   checked: string[];
   updatedAt: string;
 }
+
+/* ---------- Labs (LAB, LAB_TEST) ---------- */
+
+export type LabTestCode = 'ns1' | 'igm_igg' | 'cbc';
+
+/** LAB_TEST */
+export interface LabTest {
+  testId: string;
+  labId: string;
+  code: LabTestCode;
+  /** Simulated price in BDT. */
+  priceBdt: number;
+  /** Typical time until the report is ready. */
+  turnaroundHours: number;
+}
+
+/** LAB */
+export interface Lab {
+  labId: string;
+  name: LocalizedText;
+  type: HospitalType;
+  divisionId: DivisionId;
+  districtId: string;
+  district: LocalizedText;
+  address: LocalizedText;
+  phone: string;
+  location: [number, number];
+  homeCollection: boolean;
+  tests: LabTest[];
+}
+
+/* ---------- Chatbot (UC18–UC20) ---------- */
+
+export type ChatLang = 'en' | 'bn';
+export type ChatSource = 'dghs' | 'who';
+
+export interface ChatAnswer {
+  answerId: string;
+  /** Already in the reply language. */
+  text: string;
+  sources: ChatSource[];
+}
+
+export type ChatTool =
+  | { kind: 'hospitals'; divisionId: DivisionId; hospitalIds: string[] }
+  /** Empty divisionIds = "highest risk today". */
+  | { kind: 'risk'; divisionIds: DivisionId[] }
+  | { kind: 'labs'; divisionId: DivisionId; labIds: string[] }
+  | {
+      kind: 'booking';
+      divisionId: DivisionId;
+      /** Null when no free slot was found in the next 7 days. */
+      suggestion: { hospital: Hospital; doctor: Doctor; slot: Slot } | null;
+    };
+
+/** Sent with each question so answers can use the user's division and UI language. */
+export interface ChatContext {
+  divisionId: DivisionId;
+  /** UI language, used when the text has no letters. */
+  uiLang: ChatLang;
+}
+
+/** What the chat service returns for one question. Both null = "not sure" fallback. */
+export interface ChatReply {
+  lang: ChatLang;
+  answer: ChatAnswer | null;
+  tool: ChatTool | null;
+}
+
+export type RedFlagId =
+  | 'bleeding'
+  | 'bellyPain'
+  | 'vomiting'
+  | 'drowsiness'
+  | 'breathing'
+  | 'coldSkin'
+  | 'fainting'
+  | 'lowUrine';
+
+export type ChatContent =
+  | { type: 'user'; text: string }
+  | { type: 'reply'; answer: ChatAnswer | null; tool: ChatTool | null }
+  | { type: 'redFlag'; flags: RedFlagId[] }
+  | { type: 'error'; question: string };
+
+export type ChatFeedback = 'up' | 'down';
+
+export interface ChatMessage {
+  messageId: string;
+  role: 'user' | 'assistant';
+  createdAt: string;
+  /** Language of the message (assistant replies follow the user's language). */
+  lang: ChatLang;
+  content: ChatContent;
+  feedback?: ChatFeedback;
+}

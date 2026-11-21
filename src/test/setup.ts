@@ -2,6 +2,7 @@ import '@testing-library/jest-dom/vitest';
 import { cleanup, configure } from '@testing-library/react';
 import { afterEach, beforeAll, beforeEach } from 'vitest';
 import { resetMockState, setMockDelay } from '@/api/mock/handlers';
+import { resetChatSession } from '@/features/chatbot/chatSession';
 import i18n from '@/lib/i18n';
 import { installMatchMedia, setDesktop } from './media';
 
@@ -58,6 +59,7 @@ beforeEach(async () => {
   }
   setDesktop(false);
   resetMockState();
+  resetChatSession();
   await i18n.changeLanguage('en');
 });
 
