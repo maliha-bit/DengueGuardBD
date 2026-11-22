@@ -12,7 +12,7 @@ export const brandColors = {
   'lime-soft': '#EEF8C4',
   lavender: '#B9A8F5',
   'lavender-soft': '#E4DDFB',
-  muted: '#6B6B70',
+  muted: '#5F5F64',
   line: '#E2E2E5',
   'risk-low': '#4CAF7A',
   'risk-medium': '#F2B544',

@@ -75,6 +75,9 @@ export function ReportDetailModal({
             <img
               src={report.photoUrl}
               alt={t('reports.list.photoAlt', { area: report.areaName })}
+              width={224}
+              height={176}
+              decoding="async"
               className="h-44 w-full shrink-0 rounded-2xl object-cover sm:w-56"
             />
           ) : (

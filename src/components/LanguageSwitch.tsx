@@ -26,7 +26,7 @@ export function LanguageSwitch() {
             aria-pressed={active}
             onClick={() => void i18n.changeLanguage(lang)}
             className={cn(
-              'min-h-[42px] min-w-[44px] rounded-full px-3 text-sm font-medium transition-colors',
+              'min-h-touch min-w-touch rounded-full px-3 text-sm font-medium transition-colors',
               active ? 'bg-brand-ink text-white' : 'text-brand-ink hover:bg-brand-canvas',
             )}
           >

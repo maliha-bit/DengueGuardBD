@@ -103,6 +103,9 @@ function ReportCard({ report }: { report: BreedingReport }) {
         <img
           src={report.photoUrl}
           alt={t('reports.list.photoAlt', { area: report.areaName })}
+          width={144}
+          height={112}
+          decoding="async"
           className="h-28 w-full shrink-0 rounded-2xl object-cover sm:w-36"
         />
       ) : (

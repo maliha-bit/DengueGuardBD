@@ -1,4 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { saveLastSeenDivisions, saveLastSeenForecast } from '@/lib/lastSeen';
 import { api } from './client';
 import type { DemoAccountId } from './mock/staffStore';
 import type {
@@ -43,14 +44,31 @@ export const queryKeys = {
   breedingReports: ['me', 'breeding-reports'] as const,
 };
 
+/** Division list; also kept on the device for the offline page. */
 export const useDivisions = () =>
-  useQuery({ queryKey: queryKeys.divisions, queryFn: api.getDivisions, staleTime: Infinity });
+  useQuery({
+    queryKey: queryKeys.divisions,
+    queryFn: async () => {
+      const list = await api.getDivisions();
+      saveLastSeenDivisions(list);
+      return list;
+    },
+    staleTime: Infinity,
+  });
 
 export const useCurrentUser = () =>
   useQuery({ queryKey: queryKeys.me, queryFn: api.getCurrentUser });
 
+/** Latest forecast run; today's risk is kept on the device for the offline page. */
 export const useLatestForecast = () =>
-  useQuery({ queryKey: queryKeys.forecast, queryFn: api.getLatestForecast });
+  useQuery({
+    queryKey: queryKeys.forecast,
+    queryFn: async () => {
+      const run = await api.getLatestForecast();
+      saveLastSeenForecast(run);
+      return run;
+    },
+  });
 
 export const useBedSummary = (divisionId: DivisionId) =>
   useQuery({ queryKey: queryKeys.beds(divisionId), queryFn: () => api.getBedSummary(divisionId) });

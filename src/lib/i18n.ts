@@ -1,6 +1,5 @@
-import i18n from 'i18next';
+import i18n, { type BackendModule } from 'i18next';
 import { initReactI18next } from 'react-i18next';
-import bn from '@/locales/bn.json';
 import en from '@/locales/en.json';
 
 export const SUPPORTED_LANGUAGES = ['en', 'bn'] as const;
@@ -27,19 +26,39 @@ function applyLanguage(lng: string) {
   }
 }
 
+/** English is bundled (it is also the fallback); Bangla downloads the first time it is used. */
 export const resources = {
   en: { translation: en },
-  bn: { translation: bn },
 } as const;
 
-void i18n.use(initReactI18next).init({
-  resources,
-  lng: readStoredLanguage(),
-  fallbackLng: 'en',
-  interpolation: { escapeValue: false },
-  returnNull: false,
-  showSupportNotice: false,
-});
+const lazyLocales: BackendModule = {
+  type: 'backend',
+  init: () => undefined,
+  read: (language, _namespace, callback) => {
+    if (language !== 'bn') {
+      callback(null, {});
+      return;
+    }
+    import('@/locales/bn.json')
+      .then((module) => callback(null, module.default))
+      .catch((error: Error) => callback(error, false));
+  },
+};
+
+/** Resolves when the stored language is ready (main.tsx waits for it before rendering). */
+export const i18nReady = i18n
+  .use(lazyLocales)
+  .use(initReactI18next)
+  .init({
+    resources,
+    partialBundledLanguages: true,
+    ns: ['translation'],
+    lng: readStoredLanguage(),
+    fallbackLng: 'en',
+    interpolation: { escapeValue: false },
+    returnNull: false,
+    showSupportNotice: false,
+  });
 
 applyLanguage(i18n.language);
 i18n.on('languageChanged', applyLanguage);

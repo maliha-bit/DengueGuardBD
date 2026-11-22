@@ -132,7 +132,7 @@ function ListingEditor({ lab }: { lab: Lab }) {
         <Card title={t('staff.lab.testsTitle')} titleAs="h2">
           <div className="flex flex-col gap-3">
             {values.tests.map((test, i) => (
-              <fieldset key={test.code} className="rounded-2xl bg-brand-canvas p-4">
+              <fieldset key={test.code} className="min-w-0 rounded-2xl bg-brand-canvas p-4">
                 <legend className="sr-only">{t(`chatbot.tests.${test.code}`)}</legend>
                 <label className="flex min-h-touch items-center gap-3 text-sm font-medium">
                   <input

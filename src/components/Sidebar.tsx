@@ -33,13 +33,18 @@ export function Sidebar({
       count: badge ? badges[badge] : 0,
       end: to === '/',
     }));
+  // The whole sidebar scrolls on short screens, so every nav item stays under the logo.
   return (
-    <aside className="on-dark fixed inset-y-0 left-0 z-30 hidden w-sidebar flex-col bg-brand-sidebar px-4 py-6 md:flex">
-      <NavLink to={homeTo} className="mx-2 mb-7 rounded-full" aria-label={t('nav.dashboard')}>
+    <aside className="on-dark fixed inset-y-0 left-0 z-30 hidden w-sidebar flex-col overflow-y-auto bg-brand-sidebar px-4 py-6 md:flex">
+      <NavLink
+        to={homeTo}
+        className="mx-2 mb-7 flex min-h-touch items-center rounded-full"
+        aria-label={`${t('common.appName')} — ${t('nav.dashboard')}`}
+      >
         <Logo />
       </NavLink>
 
-      <nav aria-label={t('nav.main')} className="-mx-1 flex-1 overflow-y-auto px-1 py-1">
+      <nav aria-label={t('nav.main')} className="-mx-1 flex-1 shrink-0 px-1 py-1">
         <ul className="flex flex-col gap-1">
           {navItems.map(({ key, to, icon: Icon, label, count = 0, end }) => {
             return (
@@ -78,7 +83,7 @@ export function Sidebar({
       {showEmergency && (
         <section
           aria-labelledby="sidebar-emergency"
-          className="mt-4 rounded-3xl bg-brand-lime p-4 text-brand-ink"
+          className="mt-4 shrink-0 rounded-3xl bg-brand-lime p-4 text-brand-ink"
         >
           <div className="flex items-center gap-2">
             <Siren aria-hidden="true" className="h-5 w-5 text-[#B3262B]" />

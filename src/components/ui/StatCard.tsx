@@ -13,14 +13,24 @@ export interface StatValueProps {
   /** Small right-aligned block next to the value. */
   aside?: ReactNode;
   onDark?: boolean;
+  /** Lavender and lime cards need ink captions (muted grey fails contrast on them). */
+  onColour?: boolean;
   className?: string;
 }
 
 /** Big number + small unit, e.g. "62 beds". Numbers use locale digits. */
-export function StatValue({ value, unit, delta, aside, onDark, className }: StatValueProps) {
+export function StatValue({
+  value,
+  unit,
+  delta,
+  aside,
+  onDark,
+  onColour,
+  className,
+}: StatValueProps) {
   const { i18n } = useTranslation();
   const display = typeof value === 'number' ? formatNumber(value, i18n.language) : value;
-  const mutedText = onDark ? 'text-white/70' : 'text-brand-muted';
+  const mutedText = onDark ? 'text-white/70' : onColour ? 'text-brand-ink/80' : 'text-brand-muted';
   return (
     <div className={cn('flex items-end justify-between gap-3', className)}>
       <div className="flex min-w-0 items-start gap-1.5">
@@ -58,9 +68,22 @@ export function StatCard({
 }: StatCardProps) {
   return (
     <Card tone={tone} title={title} icon={icon} actions={actions} className={className}>
-      <StatValue {...valueProps} onDark={tone === 'dark'} />
+      <StatValue
+        {...valueProps}
+        onDark={tone === 'dark'}
+        onColour={tone === 'lavender' || tone === 'lime'}
+      />
       {caption && (
-        <p className={cn('mt-2 text-xs', tone === 'dark' ? 'text-white/70' : 'text-brand-muted')}>
+        <p
+          className={cn(
+            'mt-2 text-xs',
+            tone === 'dark'
+              ? 'text-white/70'
+              : tone === 'lavender' || tone === 'lime'
+                ? 'text-brand-ink/80'
+                : 'text-brand-muted',
+          )}
+        >
           {caption}
         </p>
       )}
