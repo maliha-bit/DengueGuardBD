@@ -1,5 +1,4 @@
 /// <reference types="vitest/config" />
-import { execSync } from 'node:child_process';
 import { copyFileSync, existsSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { fileURLToPath, URL } from 'node:url';
@@ -7,22 +6,8 @@ import react from '@vitejs/plugin-react';
 import { defineConfig, type Plugin } from 'vite';
 import { VitePWA } from 'vite-plugin-pwa';
 
-/**
- * Repo name for the GitHub Pages sub-path (https://<user>.github.io/<repo>/).
- * Prefers GITHUB_REPOSITORY (set in Actions), then the git remote, then a fixed fallback.
- */
-function repoName(): string {
-  const fromEnv = process.env.GITHUB_REPOSITORY?.split('/')[1];
-  if (fromEnv) return fromEnv;
-  try {
-    const url = execSync('git remote get-url origin', { encoding: 'utf8' }).trim();
-    const match = url.match(/[/:]([^/]+?)(?:\.git)?$/);
-    if (match) return match[1];
-  } catch {
-    // no git or no remote: use fallback
-  }
-  return 'dengue_prediction_dashboard';
-}
+/** GitHub Pages sub-path: https://maliha-bit.github.io/DengueGuardBD/ (case-sensitive). */
+const PAGES_BASE = '/DengueGuardBD/';
 
 /**
  * Vendor chunks: Leaflet and Recharts are only reached from lazily loaded pages, so they never
@@ -66,7 +51,7 @@ function spaFallback(): Plugin {
 
 export default defineConfig(({ command, isPreview }) => {
   // Sub-path only for production builds (and `vite preview` of them); "/" for dev and tests.
-  const base = command === 'build' || isPreview ? `/${repoName()}/` : '/';
+  const base = command === 'build' || isPreview ? PAGES_BASE : '/';
 
   return {
     base,

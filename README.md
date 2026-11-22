@@ -6,6 +6,8 @@ appointments, symptom triage, home care guidance, labs, blood/platelet donors an
 reporting. Staff portals cover Hospital Staff, Lab Staff, Health Authority Officers and the System
 Administrator.
 
+**Live demo:** https://maliha-bit.github.io/DengueGuardBD/
+
 Requirements: `docs/DengueGuard_BD_SRS.pdf` (FR01–FR39, NFR01–NFR32, UC01–UC35).
 
 > **Simulated data.** The FastAPI backend is not ready yet. All data comes from a mock API layer
@@ -22,6 +24,8 @@ vite-plugin-pwa · Vitest + React Testing Library · Playwright + axe-core · ES
 Requires Node.js 22.
 
 ```bash
+git clone -b frontend https://github.com/maliha-bit/DengueGuardBD.git
+cd DengueGuardBD
 npm install
 npm run dev          # http://localhost:5173
 ```
@@ -103,5 +107,6 @@ Recharts load only on the pages that use them. The app-shell entry chunk is abou
 ## Deployment
 
 `.github/workflows/deploy.yml` builds with `VITE_USE_MOCK=true` and deploys `dist/` to GitHub Pages
-on every push to `frontend`. Production builds use the `/<repo>/` base path, and `404.html` is a
+on every push to `frontend`, live at https://maliha-bit.github.io/DengueGuardBD/. Production
+builds use the `/DengueGuardBD/` base path (set in `vite.config.ts`, case-sensitive), and `404.html` is a
 copy of `index.html` so deep links work.

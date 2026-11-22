@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test';
 
-const BASE = '/dengue_prediction_dashboard/';
+const BASE = '/DengueGuardBD/';
 
 test('production build: base path, manifest, service worker and offline reload', async ({
   page,
