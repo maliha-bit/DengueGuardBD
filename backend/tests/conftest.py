@@ -6,6 +6,7 @@ from sqlalchemy import event
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 
 from app.config import settings
+from app.db import CONNECT_ARGS
 
 
 @pytest.fixture
@@ -24,7 +25,9 @@ async def db_session() -> AsyncIterator[AsyncSession]:
     waiter is gone. A per-test engine can never be reused across a loop
     boundary, so the failure mode can't occur.
     """
-    test_engine = create_async_engine(settings.effective_test_database_url)
+    test_engine = create_async_engine(
+        settings.effective_test_database_url, connect_args=CONNECT_ARGS
+    )
     try:
         async with test_engine.connect() as connection:
             await connection.begin()

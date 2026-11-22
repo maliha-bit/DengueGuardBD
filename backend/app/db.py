@@ -16,7 +16,16 @@ class Base(DeclarativeBase):
     metadata = MetaData(naming_convention=NAMING_CONVENTION)
 
 
-engine: AsyncEngine = create_async_engine(settings.database_url)
+# asyncpg defaults to a 60s connect timeout and no command timeout at all.
+# A suspended/unreachable Neon endpoint (or a stuck query) then blocks for
+# a long time — and on Windows, pytest-timeout's thread-based watchdog
+# cannot forcibly interrupt that underlying blocking socket call, so the
+# *test* can still run far longer than its nominal timeout. Capping both
+# here means a bad connection fails fast with a clear asyncpg error instead
+# of stalling the process.
+CONNECT_ARGS = {"timeout": 10, "command_timeout": 20}
+
+engine: AsyncEngine = create_async_engine(settings.database_url, connect_args=CONNECT_ARGS)
 async_session_maker = async_sessionmaker(engine, expire_on_commit=False)
 
 
