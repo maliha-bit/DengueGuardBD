@@ -1,4 +1,23 @@
 from app.models.geo import District, Division
+from app.models.hospital import (
+    Appointment,
+    BedAvailability,
+    Doctor,
+    DoctorSchedule,
+    Hospital,
+    Slot,
+)
 from app.models.user import RefreshToken, User
 
-__all__ = ["Division", "District", "User", "RefreshToken"]
+__all__ = [
+    "Division",
+    "District",
+    "User",
+    "RefreshToken",
+    "Hospital",
+    "BedAvailability",
+    "Doctor",
+    "DoctorSchedule",
+    "Slot",
+    "Appointment",
+]
