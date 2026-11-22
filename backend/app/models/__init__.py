@@ -8,6 +8,7 @@ from app.models.hospital import (
     Hospital,
     Slot,
 )
+from app.models.lab import Lab, LabTest
 from app.models.user import RefreshToken, User
 
 __all__ = [
@@ -23,4 +24,6 @@ __all__ = [
     "Appointment",
     "Forecast",
     "ForecastRun",
+    "Lab",
+    "LabTest",
 ]
