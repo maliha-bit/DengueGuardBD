@@ -1,6 +1,7 @@
 import { Outlet } from 'react-router-dom';
 import type { StaffRole } from '@/api/types';
 import { BottomNav } from '@/components/BottomNav';
+import { OfflineBanner } from '@/components/OfflineBanner';
 import { Sidebar } from '@/components/Sidebar';
 import { Topbar } from '@/components/Topbar';
 import type { ShellNavItem } from '@/app/navigation';
@@ -34,7 +35,7 @@ export function StaffShell({ portal: role }: { portal: StaffRole }) {
     <div className="min-h-screen bg-brand-canvas md:bg-brand-sidebar">
       <a
         href="#main"
-        className="sr-only z-50 rounded-full bg-brand-lime px-4 py-2 text-sm font-medium text-brand-ink focus:not-sr-only focus:fixed focus:left-4 focus:top-4"
+        className="sr-only z-50 rounded-full bg-brand-lime px-5 text-sm font-medium text-brand-ink focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:inline-flex focus:min-h-touch focus:items-center"
       >
         {t('nav.skipToContent')}
       </a>
@@ -44,6 +45,7 @@ export function StaffShell({ portal: role }: { portal: StaffRole }) {
           <div className="min-h-screen bg-brand-canvas px-4 pb-32 pt-4 md:min-h-[calc(100vh-1.5rem)] md:rounded-[32px] md:px-8 md:pb-8 md:pt-6">
             <div className="mx-auto max-w-[1280px]">
               <Topbar homeTo={home} showSearch={false} />
+              <OfflineBanner />
               <main id="main" tabIndex={-1} className="focus:outline-none">
                 <RequireRole roles={[role]}>
                   <Outlet />

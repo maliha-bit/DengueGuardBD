@@ -4,6 +4,7 @@ import { USE_MOCK } from '@/api/client';
 import { Badge, buttonClasses } from '@/components/ui';
 import { cn } from '@/lib/cn';
 import { useLocale } from '@/lib/useLocale';
+import { InstallButton } from './InstallButton';
 import { LanguageSwitch } from './LanguageSwitch';
 import { LogoMark } from './Logo';
 import { NotificationsButton } from './NotificationsButton';
@@ -29,7 +30,11 @@ export function Topbar({
         <UserChip />
       </div>
       {USE_MOCK && (
-        <Badge tone="lavender" icon={FlaskConical} className="hidden min-[400px]:inline-flex">
+        <Badge
+          tone="lavender"
+          icon={FlaskConical}
+          className="hidden min-[400px]:inline-flex md:hidden xl:inline-flex"
+        >
           {t('common.demoBadge')}
         </Badge>
       )}
@@ -46,6 +51,7 @@ export function Topbar({
             <Search aria-hidden="true" className="h-5 w-5" strokeWidth={1.75} />
           </Link>
         )}
+        <InstallButton />
         <LanguageSwitch />
         <NotificationsButton />
         <div className="md:hidden">

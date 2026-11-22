@@ -22,7 +22,7 @@ export function EmergencyNumbers({ layout = 'stack' }: { layout?: 'stack' | 'she
       >
         <PhoneCall aria-hidden="true" className="h-4 w-4" />
         <span className="font-semibold">{digits(999)}</span>
-        <span className="truncate font-normal opacity-90">{t('emergency.ambulance')}</span>
+        <span className="truncate font-normal">{t('emergency.ambulance')}</span>
       </a>
       <a
         href="tel:16263"
@@ -37,7 +37,7 @@ export function EmergencyNumbers({ layout = 'stack' }: { layout?: 'stack' | 'she
       >
         <Phone aria-hidden="true" className="h-4 w-4" />
         <span className="font-semibold">{digits(16263)}</span>
-        <span className="truncate font-normal opacity-90">{t('emergency.hotline')}</span>
+        <span className="truncate font-normal">{t('emergency.hotline')}</span>
       </a>
     </div>
   );

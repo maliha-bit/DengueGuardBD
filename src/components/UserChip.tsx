@@ -65,14 +65,23 @@ export function UserChip() {
         onClick={() => setOpen(true)}
         aria-haspopup="dialog"
         className="flex min-h-touch items-center gap-3 rounded-full pr-2"
-        aria-label={t('topbar.userMenu', { name, role: t(`roles.${user.role}`) })}
       >
         <Avatar name={user.name.en} />
-        <span className="hidden min-w-0 flex-col text-left sm:flex">
+        {/* Name comes from text (not aria-label) so it always contains what is visible. */}
+        <span className="sr-only">
+          {t('topbar.userMenu', { name, role: t(`roles.${user.role}`) })}
+        </span>
+        <span
+          aria-hidden="true"
+          className="hidden min-w-0 flex-col text-left sm:flex md:max-lg:hidden"
+        >
           <span className="truncate text-sm font-semibold">{name}</span>
           <span className="text-xs text-brand-muted">{t(`roles.${user.role}`)}</span>
         </span>
-        <ChevronDown aria-hidden="true" className="hidden h-4 w-4 text-brand-muted sm:block" />
+        <ChevronDown
+          aria-hidden="true"
+          className="hidden h-4 w-4 text-brand-muted sm:block md:max-lg:hidden"
+        />
       </button>
       <UserMenu
         open={open}

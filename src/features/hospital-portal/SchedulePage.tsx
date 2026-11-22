@@ -142,7 +142,7 @@ function DayRow({
   const { fields, append, remove } = useFieldArray({ control, name: `days.${index}.ranges` });
   const dayName = weekdayName(day, lang);
   return (
-    <fieldset className="rounded-2xl bg-brand-canvas p-4">
+    <fieldset className="min-w-0 rounded-2xl bg-brand-canvas p-3 sm:p-4">
       <legend className="sr-only">{dayName}</legend>
       <div className="flex flex-wrap items-center gap-3">
         <span aria-hidden="true" className="w-16 font-semibold">
@@ -151,21 +151,24 @@ function DayRow({
         {fields.length === 0 && (
           <span className="text-sm text-brand-muted">{t('staff.schedule.off')}</span>
         )}
-        <div className="flex flex-1 flex-wrap gap-2">
+        <div className="flex min-w-0 basis-full flex-wrap gap-2 sm:flex-1 sm:basis-auto">
           {fields.map((field, r) => (
-            <div key={field.id} className="flex items-center gap-1 rounded-full bg-white px-2 py-1">
+            <div
+              key={field.id}
+              className="flex w-full min-w-0 flex-wrap items-center gap-1 rounded-2xl bg-white px-2 py-1 sm:w-auto sm:flex-nowrap sm:rounded-full"
+            >
               <input
                 type="time"
                 aria-label={t('staff.schedule.start', { day: dayName })}
                 {...register(`days.${index}.ranges.${r}.start`)}
-                className="min-h-touch rounded-full px-2 text-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-ink"
+                className="min-h-touch min-w-[7.5rem] flex-1 rounded-full px-2 text-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-ink sm:flex-none"
               />
               <span aria-hidden="true">–</span>
               <input
                 type="time"
                 aria-label={t('staff.schedule.end', { day: dayName })}
                 {...register(`days.${index}.ranges.${r}.end`)}
-                className="min-h-touch rounded-full px-2 text-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-ink"
+                className="min-h-touch min-w-[7.5rem] flex-1 rounded-full px-2 text-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-ink sm:flex-none"
               />
               <Button
                 size="sm"

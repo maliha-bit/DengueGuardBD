@@ -280,6 +280,9 @@ function ReportForm({ onDone }: { onDone: (report: BreedingReport) => void }) {
                 <img
                   src={photo}
                   alt={t('reports.form.preview')}
+                  width={213}
+                  height={160}
+                  decoding="async"
                   className="h-40 rounded-2xl object-cover"
                 />
                 <Button

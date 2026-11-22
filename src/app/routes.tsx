@@ -1,27 +1,39 @@
-import { lazy, Suspense, type ComponentType, type LazyExoticComponent } from 'react';
+import { lazy, Suspense, type ComponentType } from 'react';
+import { lazyPage } from '@/lib/lazyPage';
 import { Navigate, type RouteObject } from 'react-router-dom';
+import { PageSkeleton } from '@/components/PageSkeleton';
 import { SkeletonCard } from '@/components/ui';
-import DashboardPage from '@/features/dashboard/DashboardPage';
-import { PlaceholderPage, type PlaceholderKey } from '@/features/placeholder/PlaceholderPage';
-import AppointmentsPage from '@/features/appointments/AppointmentsPage';
-import ChatbotPage from '@/features/chatbot/ChatbotPage';
-import DonorInboxPage from '@/features/donors/DonorInboxPage';
-import DonorProfilePage from '@/features/donors/DonorProfilePage';
-import FindDonorsPage from '@/features/donors/FindDonorsPage';
-import MyRequestsPage from '@/features/donors/MyRequestsPage';
-import FeverLogPage from '@/features/fever-log/FeverLogPage';
-import HomeCarePage from '@/features/homecare/HomeCarePage';
-import HospitalDetailPage from '@/features/hospitals/HospitalDetailPage';
-import HospitalsPage from '@/features/hospitals/HospitalsPage';
-import LabsPage from '@/features/labs/LabsPage';
-import MyReportsPage from '@/features/reports/MyReportsPage';
-import NewReportPage from '@/features/reports/NewReportPage';
-import RiskMapPage from '@/features/risk/RiskMapPage';
-import SymptomCheckerPage from '@/features/triage/SymptomCheckerPage';
+import type { PlaceholderKey } from '@/features/placeholder/PlaceholderPage';
+// Bundled with the shell (not lazy): it must open even when nothing else can download.
+import OfflinePage from '@/features/offline/OfflinePage';
 import { CitizenShell } from './CitizenShell';
+import { RouteError } from './RouteError';
 import { NAV_ITEMS, type NavKey } from './navigation';
-import { NotFoundPage } from './NotFoundPage';
 import { StaffShell } from './StaffShell';
+
+/* Every page loads on demand, so the first download is only the app shell (NFR15). */
+const pages = {
+  dashboard: lazyPage(() => import('@/features/dashboard/DashboardPage')),
+  risk: lazyPage(() => import('@/features/risk/RiskMapPage')),
+  hospitals: lazyPage(() => import('@/features/hospitals/HospitalsPage')),
+  hospitalDetail: lazyPage(() => import('@/features/hospitals/HospitalDetailPage')),
+  appointments: lazyPage(() => import('@/features/appointments/AppointmentsPage')),
+  symptoms: lazyPage(() => import('@/features/triage/SymptomCheckerPage')),
+  homeCare: lazyPage(() => import('@/features/homecare/HomeCarePage')),
+  feverLog: lazyPage(() => import('@/features/fever-log/FeverLogPage')),
+  chatbot: lazyPage(() => import('@/features/chatbot/ChatbotPage')),
+  findDonors: lazyPage(() => import('@/features/donors/FindDonorsPage')),
+  myRequests: lazyPage(() => import('@/features/donors/MyRequestsPage')),
+  donorProfile: lazyPage(() => import('@/features/donors/DonorProfilePage')),
+  donorInbox: lazyPage(() => import('@/features/donors/DonorInboxPage')),
+  labs: lazyPage(() => import('@/features/labs/LabsPage')),
+  myReports: lazyPage(() => import('@/features/reports/MyReportsPage')),
+  newReport: lazyPage(() => import('@/features/reports/NewReportPage')),
+  placeholder: lazyPage<{ page: PlaceholderKey }>(async () => ({
+    default: (await import('@/features/placeholder/PlaceholderPage')).PlaceholderPage,
+  })),
+  notFound: lazyPage(async () => ({ default: (await import('./NotFoundPage')).NotFoundPage })),
+};
 
 // Dev-only UI kit; not linked anywhere and tree-shaken out of production builds.
 const UiKitPage = import.meta.env.DEV ? lazy(() => import('@/features/dev/UiKitPage')) : null;
@@ -45,32 +57,36 @@ const placeholderRoutes: RouteObject[] = NAV_ITEMS.filter(
   (item) => !BUILT_PAGES.includes(item.key),
 ).map((item) => ({
   path: item.to.slice(1),
-  element: <PlaceholderPage page={item.key as PlaceholderKey} />,
+  element: (
+    <Suspense fallback={<PageSkeleton />}>
+      <pages.placeholder page={item.key as PlaceholderKey} />
+    </Suspense>
+  ),
 }));
 
 /* Staff portals load on demand (citizens never download them). */
 const staffPages = {
-  hospitalOverview: lazy(() => import('@/features/hospital-portal/HospitalOverviewPage')),
-  beds: lazy(() => import('@/features/hospital-portal/BedUpdatePage')),
-  doctors: lazy(() => import('@/features/hospital-portal/DoctorsPage')),
-  schedule: lazy(() => import('@/features/hospital-portal/SchedulePage')),
-  slots: lazy(() => import('@/features/hospital-portal/SlotGeneratorPage')),
-  appointments: lazy(() => import('@/features/hospital-portal/HospitalAppointmentsPage')),
-  lab: lazy(() => import('@/features/lab-portal/LabListingPage')),
-  authority: lazy(() => import('@/features/authority/AuthorityOverviewPage')),
-  reports: lazy(() => import('@/features/authority/ReportsPage')),
-  tasks: lazy(() => import('@/features/authority/TasksPage')),
-  approvals: lazy(() => import('@/features/admin/ApprovalsPage')),
-  directories: lazy(() => import('@/features/admin/DirectoriesPage')),
-  knowledge: lazy(() => import('@/features/admin/KnowledgePage')),
-  forecast: lazy(() => import('@/features/admin/ForecastPage')),
-  analytics: lazy(() => import('@/features/admin/AnalyticsPage')),
-  audit: lazy(() => import('@/features/admin/AuditPage')),
+  hospitalOverview: lazyPage(() => import('@/features/hospital-portal/HospitalOverviewPage')),
+  beds: lazyPage(() => import('@/features/hospital-portal/BedUpdatePage')),
+  doctors: lazyPage(() => import('@/features/hospital-portal/DoctorsPage')),
+  schedule: lazyPage(() => import('@/features/hospital-portal/SchedulePage')),
+  slots: lazyPage(() => import('@/features/hospital-portal/SlotGeneratorPage')),
+  appointments: lazyPage(() => import('@/features/hospital-portal/HospitalAppointmentsPage')),
+  lab: lazyPage(() => import('@/features/lab-portal/LabListingPage')),
+  authority: lazyPage(() => import('@/features/authority/AuthorityOverviewPage')),
+  reports: lazyPage(() => import('@/features/authority/ReportsPage')),
+  tasks: lazyPage(() => import('@/features/authority/TasksPage')),
+  approvals: lazyPage(() => import('@/features/admin/ApprovalsPage')),
+  directories: lazyPage(() => import('@/features/admin/DirectoriesPage')),
+  knowledge: lazyPage(() => import('@/features/admin/KnowledgePage')),
+  forecast: lazyPage(() => import('@/features/admin/ForecastPage')),
+  analytics: lazyPage(() => import('@/features/admin/AnalyticsPage')),
+  audit: lazyPage(() => import('@/features/admin/AuditPage')),
 };
 
-function page(Page: LazyExoticComponent<ComponentType>) {
+function page(Page: ComponentType) {
   return (
-    <Suspense fallback={<SkeletonCard className="mt-8" />}>
+    <Suspense fallback={<PageSkeleton />}>
       <Page />
     </Suspense>
   );
@@ -80,6 +96,7 @@ const staffRoutes: RouteObject[] = [
   {
     path: '/staff/hospital',
     element: <StaffShell portal="hospital_staff" />,
+    errorElement: <RouteError />,
     children: [
       { index: true, element: page(staffPages.hospitalOverview) },
       { path: 'beds', element: page(staffPages.beds) },
@@ -92,11 +109,13 @@ const staffRoutes: RouteObject[] = [
   {
     path: '/staff/lab',
     element: <StaffShell portal="lab_staff" />,
+    errorElement: <RouteError />,
     children: [{ index: true, element: page(staffPages.lab) }],
   },
   {
     path: '/staff/authority',
     element: <StaffShell portal="authority" />,
+    errorElement: <RouteError />,
     children: [
       { index: true, element: page(staffPages.authority) },
       { path: 'reports', element: page(staffPages.reports) },
@@ -106,6 +125,7 @@ const staffRoutes: RouteObject[] = [
   {
     path: '/staff/admin',
     element: <StaffShell portal="admin" />,
+    errorElement: <RouteError />,
     children: [
       { index: true, element: page(staffPages.approvals) },
       { path: 'directories', element: page(staffPages.directories) },
@@ -117,33 +137,42 @@ const staffRoutes: RouteObject[] = [
   },
 ];
 
+/** Loads every page's code (tests call this so pages render without a loading step). */
+export function preloadPages() {
+  return Promise.all(
+    [...Object.values(pages), ...Object.values(staffPages)].map((p) => p.preload()),
+  );
+}
+
 export const routes: RouteObject[] = [
   ...staffRoutes,
   {
     path: '/',
     element: <CitizenShell />,
+    errorElement: <RouteError />,
     children: [
-      { index: true, element: <DashboardPage /> },
-      { path: 'risk', element: <RiskMapPage /> },
+      { index: true, element: page(pages.dashboard) },
+      { path: 'risk', element: page(pages.risk) },
       { path: 'risk-map', element: <Navigate to="/risk" replace /> },
-      { path: 'hospitals', element: <HospitalsPage /> },
-      { path: 'hospitals/:hospitalId', element: <HospitalDetailPage /> },
-      { path: 'appointments', element: <AppointmentsPage /> },
-      { path: 'symptoms', element: <SymptomCheckerPage /> },
+      { path: 'hospitals', element: page(pages.hospitals) },
+      { path: 'hospitals/:hospitalId', element: page(pages.hospitalDetail) },
+      { path: 'appointments', element: page(pages.appointments) },
+      { path: 'symptoms', element: page(pages.symptoms) },
       { path: 'symptom-checker', element: <Navigate to="/symptoms" replace /> },
-      { path: 'home-care', element: <HomeCarePage /> },
-      { path: 'fever-log', element: <FeverLogPage /> },
-      { path: 'chatbot', element: <ChatbotPage /> },
-      { path: 'donors', element: <FindDonorsPage /> },
-      { path: 'donors/requests', element: <MyRequestsPage /> },
-      { path: 'donor/profile', element: <DonorProfilePage /> },
-      { path: 'donor/inbox', element: <DonorInboxPage /> },
-      { path: 'labs', element: <LabsPage /> },
-      { path: 'reports', element: <MyReportsPage /> },
-      { path: 'reports/new', element: <NewReportPage /> },
+      { path: 'home-care', element: page(pages.homeCare) },
+      { path: 'fever-log', element: page(pages.feverLog) },
+      { path: 'chatbot', element: page(pages.chatbot) },
+      { path: 'donors', element: page(pages.findDonors) },
+      { path: 'donors/requests', element: page(pages.myRequests) },
+      { path: 'donor/profile', element: page(pages.donorProfile) },
+      { path: 'donor/inbox', element: page(pages.donorInbox) },
+      { path: 'labs', element: page(pages.labs) },
+      { path: 'reports', element: page(pages.myReports) },
+      { path: 'reports/new', element: page(pages.newReport) },
       { path: 'report', element: <Navigate to="/reports/new" replace /> },
+      { path: 'offline', element: <OfflinePage /> },
       ...placeholderRoutes,
-      { path: '*', element: <NotFoundPage /> },
+      { path: '*', element: page(pages.notFound) },
     ],
   },
   ...(UiKitPage

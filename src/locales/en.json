@@ -1301,7 +1301,7 @@
       "start": "{{day}} start time",
       "end": "{{day}} end time",
       "addRange": "Add time",
-      "addRangeFor": "Add a time range on {{day}}",
+      "addRangeFor": "Add time: {{day}}",
       "removeRange": "Remove a time range on {{day}}",
       "save": "Save schedule",
       "saved": "Schedule saved for {{name}}."
@@ -1391,7 +1391,7 @@
       "noAlertsTitle": "No risk alerts today",
       "noAlertsMessage": "All divisions are at low risk in the latest forecast.",
       "createTask": "Create task",
-      "createTaskFor": "Create a prevention task for {{division}}",
+      "createTaskFor": "Create task: {{division}}",
       "defaultTaskTitle": "Prevention drive in {{division}}"
     },
     "reports": {
@@ -1636,5 +1636,24 @@
         "export_csv": "Exported CSV"
       }
     }
+  },
+  "offline": {
+    "banner": "You are offline. Saved data is shown; changes may not reach the server.",
+    "bannerLink": "Offline help",
+    "title": "Offline help",
+    "subtitle": "You are offline. Emergency calls still work.",
+    "subtitleOnline": "What you can still use when there is no internet.",
+    "callHint": "Phone calls do not need internet. Call now if someone has warning signs.",
+    "lastSeenTitle": "Last-seen dengue risk",
+    "forecastFrom": "Forecast from {{time}}",
+    "cases": "{{value}} cases expected",
+    "lastSeenHint": "Saved on this device the last time you were online. It may be out of date.",
+    "noDataTitle": "No saved risk data yet",
+    "noDataMessage": "Open the dashboard or risk map once while online to save it on this device.",
+    "install": "Install app",
+    "installShort": "Install",
+    "installed": "DengueGuard BD was added to your device.",
+    "pageErrorTitle": "This page didn't load",
+    "pageErrorOffline": "You are offline and this page isn't saved on the device yet. Reconnect and try again."
   }
 }

@@ -26,7 +26,7 @@ export default tseslint.config(
     },
   },
   {
-    files: ['e2e/**/*.ts', 'playwright.config.ts'],
+    files: ['e2e/**/*.ts', 'e2e-preview/**/*.ts', 'playwright*.config.ts'],
     languageOptions: { globals: globals.node },
     rules: { 'react-hooks/rules-of-hooks': 'off' },
   },

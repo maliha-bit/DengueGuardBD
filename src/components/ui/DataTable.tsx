@@ -24,7 +24,8 @@ export interface DataTableProps<T> {
 }
 
 /**
- * Table on tablets and desktops; a list of cards under 768px so nothing scrolls sideways.
+ * Table on wide screens; a list of cards below 1024px (phones, and tablets where the sidebar
+ * leaves too little room for columns) so nothing scrolls sideways.
  * Rows carry `data-row` so tests can find them in either layout.
  */
 export function DataTable<T>({
@@ -36,7 +37,7 @@ export function DataTable<T>({
   className,
 }: DataTableProps<T>) {
   const { t } = useTranslation();
-  const wide = useMediaQuery('(min-width: 768px)');
+  const wide = useMediaQuery('(min-width: 1024px)');
   const primary = columns.find((c) => c.primary) ?? columns[0];
   const rest = columns.filter((c) => c !== primary);
 

@@ -24,6 +24,30 @@ function repoName(): string {
   return 'dengue_prediction_dashboard';
 }
 
+/**
+ * Vendor chunks: Leaflet and Recharts are only reached from lazily loaded pages, so they never
+ * load with the app shell; the rest is split so browsers can cache libraries between releases.
+ */
+function vendorChunk(id: string): string | undefined {
+  if (id.includes('/src/api/mock/')) return 'mock-data';
+  if (!id.includes('node_modules')) return undefined;
+  if (/node_modules\/(leaflet|react-leaflet|@react-leaflet)\//.test(id)) return 'vendor-leaflet';
+  if (
+    /node_modules\/(recharts|d3-[^/]+|victory-vendor|internmap|decimal\.js-light|es-toolkit|immer|reselect|@reduxjs|redux|react-redux|use-sync-external-store|eventemitter3|tiny-invariant)\//.test(
+      id,
+    )
+  )
+    return 'vendor-recharts';
+  if (
+    /node_modules\/(react|react-dom|scheduler|react-router|react-router-dom|@remix-run)\//.test(id)
+  )
+    return 'vendor-react';
+  if (/node_modules\/(zod|react-hook-form|@hookform)\//.test(id)) return 'vendor-forms';
+  if (/node_modules\/(i18next|react-i18next)\//.test(id)) return 'vendor-i18n';
+  if (/node_modules\/@tanstack\//.test(id)) return 'vendor-query';
+  return undefined;
+}
+
 /** Copies dist/index.html to dist/404.html so Pages serves the SPA for deep links. */
 function spaFallback(): Plugin {
   let outDir = 'dist';
@@ -52,12 +76,16 @@ export default defineConfig(({ command, isPreview }) => {
         registerType: 'autoUpdate',
         includeAssets: ['favicon.svg'],
         manifest: {
+          id: base,
           name: 'DengueGuard BD',
           short_name: 'DengueGuard',
           description: 'Division-wise dengue risk forecast and care access for Bangladesh',
           theme_color: '#161618',
           background_color: '#E9E9EB',
           display: 'standalone',
+          orientation: 'portrait',
+          lang: 'en',
+          categories: ['health', 'medical'],
           start_url: base,
           scope: base,
           // Relative icon paths resolve against the manifest, which lives under `base`.
@@ -68,11 +96,36 @@ export default defineConfig(({ command, isPreview }) => {
           ],
         },
         workbox: {
+          // The whole app shell (all lazy pages, both languages) works offline.
+          globPatterns: ['**/*.{js,css,html,svg,png,webmanifest}'],
           navigateFallback: `${base}index.html`,
+          runtimeCaching: [
+            {
+              urlPattern: /^https:\/\/fonts\.(googleapis|gstatic)\.com\/.*/,
+              handler: 'CacheFirst',
+              options: {
+                cacheName: 'google-fonts',
+                expiration: { maxEntries: 20, maxAgeSeconds: 60 * 60 * 24 * 365 },
+                cacheableResponse: { statuses: [0, 200] },
+              },
+            },
+            {
+              urlPattern: /^https:\/\/tile\.openstreetmap\.org\/.*/,
+              handler: 'StaleWhileRevalidate',
+              options: {
+                cacheName: 'map-tiles',
+                expiration: { maxEntries: 300, maxAgeSeconds: 60 * 60 * 24 * 7 },
+                cacheableResponse: { statuses: [0, 200] },
+              },
+            },
+          ],
         },
       }),
       spaFallback(),
     ],
+    build: {
+      rollupOptions: { output: { manualChunks: vendorChunk } },
+    },
     resolve: {
       alias: { '@': fileURLToPath(new URL('./src', import.meta.url)) },
     },

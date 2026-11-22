@@ -182,7 +182,7 @@ export default function ReportsPage() {
               />
             </Card>
           ) : (
-            <div className="grid gap-4 xl:grid-cols-[minmax(0,2fr),minmax(0,3fr)]">
+            <div className="grid gap-4 xl:grid-cols-[minmax(0,2fr),minmax(0,3fr)] [&>*]:min-w-0">
               <Card className="h-80 overflow-hidden p-0 xl:h-auto xl:min-h-[420px]">
                 <Suspense fallback={<Skeleton className="h-full rounded-none" />}>
                   <ReportsMapView reports={filtered} onOpen={(r) => setOpenId(r.reportId)} />

@@ -2,6 +2,7 @@ import '@testing-library/jest-dom/vitest';
 import { cleanup, configure } from '@testing-library/react';
 import { afterEach, beforeAll, beforeEach } from 'vitest';
 import { resetMockState, setMockDelay } from '@/api/mock/handlers';
+import { preloadPages } from '@/app/routes';
 import { resetChatSession } from '@/features/chatbot/chatSession';
 import i18n from '@/lib/i18n';
 import { installMatchMedia, setDesktop } from './media';
@@ -46,8 +47,10 @@ installMatchMedia();
 // jsdom does not implement scrolling.
 window.scrollTo = () => {};
 
-beforeAll(() => {
+// Pages are lazy in the app; load them up front so tests can query them right after render.
+beforeAll(async () => {
   setMockDelay(0);
+  await preloadPages();
 });
 
 beforeEach(async () => {
