@@ -8,6 +8,7 @@ from app.models.hospital import (
     Hospital,
     Slot,
 )
+from app.models.donor import DonorProfile, DonorRequest, MisuseReport
 from app.models.lab import Lab, LabTest
 from app.models.user import RefreshToken, User
 
@@ -26,4 +27,7 @@ __all__ = [
     "ForecastRun",
     "Lab",
     "LabTest",
+    "DonorProfile",
+    "DonorRequest",
+    "MisuseReport",
 ]
