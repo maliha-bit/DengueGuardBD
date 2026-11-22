@@ -1,5 +1,6 @@
 from app.models.forecast import Forecast, ForecastRun
 from app.models.geo import District, Division
+from app.models.health_records import ChecklistProgress, FeverLog, TriageResult
 from app.models.hospital import (
     Appointment,
     BedAvailability,
@@ -34,4 +35,7 @@ __all__ = [
     "BreedingReport",
     "ReportStatusHistory",
     "PreventionTask",
+    "TriageResult",
+    "FeverLog",
+    "ChecklistProgress",
 ]
