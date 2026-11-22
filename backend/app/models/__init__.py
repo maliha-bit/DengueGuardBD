@@ -1,3 +1,4 @@
+from app.models.forecast import Forecast, ForecastRun
 from app.models.geo import District, Division
 from app.models.hospital import (
     Appointment,
@@ -20,4 +21,6 @@ __all__ = [
     "DoctorSchedule",
     "Slot",
     "Appointment",
+    "Forecast",
+    "ForecastRun",
 ]
