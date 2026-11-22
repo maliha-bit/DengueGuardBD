@@ -104,6 +104,24 @@ Recharts load only on the pages that use them. The app-shell entry chunk is abou
   (999, 16263) and the last-seen division risk saved on the device. If a page's code cannot load,
   the route error screen offers Retry and a link to offline help.
 
+## Run the backend
+
+The FastAPI backend lives in `backend/` (branch `backend`). It's a separate Python project from the
+frontend above.
+
+```bash
+cd backend
+python -m venv .venv
+.venv\Scripts\activate       # Windows; use `source .venv/bin/activate` on macOS/Linux
+pip install -r requirements.txt
+copy .env.example .env       # then paste your real Neon DATABASE_URL into .env
+alembic upgrade head
+uvicorn app.main:app --reload --port 8000
+```
+
+`GET http://localhost:8000/api/v1/health` returns `{"status", "version", "database"}`. `database`
+is `"disconnected"` until `.env` has a real, reachable `DATABASE_URL`.
+
 ## Deployment
 
 `.github/workflows/deploy.yml` builds with `VITE_USE_MOCK=true` and deploys `dist/` to GitHub Pages
