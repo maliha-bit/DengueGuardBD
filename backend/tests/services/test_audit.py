@@ -32,6 +32,7 @@ async def test_log_creates_audit_row(db_session, actor):
 
 async def test_log_appends_details_to_target_text(db_session, actor):
     entry = await log(
-        db_session, actor, AuditAction.signup_reject, "Jane Doe", "জেন ডো", details="duplicate account"
+        db_session, actor, AuditAction.signup_reject, "Jane Doe", "জেন ডো",
+        details="duplicate account",
     )
     assert "duplicate account" in entry.target_en

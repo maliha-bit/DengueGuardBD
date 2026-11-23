@@ -24,7 +24,9 @@ async def test_patch_me_updates_allowed_fields(client):
     tokens = await _register_and_login(client, "profile2@example.com")
     headers = {"Authorization": f"Bearer {tokens['accessToken']}"}
     resp = await client.patch(
-        "/api/v1/users/me", json={"phone": "+8801700000001", "alertDivisions": ["dhaka"]}, headers=headers
+        "/api/v1/users/me",
+        json={"phone": "+8801700000001", "alertDivisions": ["dhaka"]},
+        headers=headers,
     )
     assert resp.status_code == 200
     assert resp.json()["alertDivisions"] == ["dhaka"]

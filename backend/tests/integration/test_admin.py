@@ -45,7 +45,9 @@ async def test_non_admin_cannot_list_pending_staff(client, db_session):
 
 
 async def test_approve_staff_sets_approved_and_creates_audit_row(client, db_session):
-    staff = await _make(db_session, Role.hospital_staff, ApprovalStatus.pending, "staff1@example.com")
+    staff = await _make(
+        db_session, Role.hospital_staff, ApprovalStatus.pending, "staff1@example.com"
+    )
     admin = await _make(db_session, Role.admin, ApprovalStatus.approved, "admin2@example.com")
     admin.password_hash = hash_password("password1")
     await db_session.commit()
@@ -79,7 +81,9 @@ async def test_reject_staff_sets_rejected_with_reason_and_audit_row(client, db_s
 
     headers = await _login_headers(client, "admin4@example.com")
     resp = await client.post(
-        f"/api/v1/admin/staff/{staff.id}/reject", json={"reason": "no license on file"}, headers=headers
+        f"/api/v1/admin/staff/{staff.id}/reject",
+        json={"reason": "no license on file"},
+        headers=headers,
     )
     assert resp.status_code == 200
     assert resp.json()["approvalStatus"] == "rejected"
