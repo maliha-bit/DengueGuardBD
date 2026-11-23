@@ -1,7 +1,4 @@
-"""
-train_trend_predictor.py — Binary classifier: will infected count rise?
-Run: python src/ml/train_trend_predictor.py
-"""
+
 import pandas as pd
 import numpy as np
 import joblib

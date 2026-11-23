@@ -1,12 +1,4 @@
-"""
-predict.py — Unified inference API for the DengueGuard BD backend.
 
-Each .joblib file is a dict: {"model": <estimator>, "features": [<col names>]}.
-This guarantees each estimator always gets the exact feature vector it was trained on.
-
-Run: python src/ml/predict.py   (demo on Dhaka's latest row)
-Import: from predict import forecast
-"""
 import joblib
 import numpy as np
 import pandas as pd

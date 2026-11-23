@@ -1,7 +1,4 @@
-"""
-eda.py — Exploratory Data Analysis
-Run: python src/ml/eda.py
-"""
+
 import pandas as pd
 import numpy as np
 import matplotlib

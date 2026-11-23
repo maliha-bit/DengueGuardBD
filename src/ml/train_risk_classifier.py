@@ -1,7 +1,4 @@
-"""
-train_risk_classifier.py — Predicts next-month risk class.
-Run: python src/ml/train_risk_classifier.py
-"""
+
 import pandas as pd
 import numpy as np
 import joblib

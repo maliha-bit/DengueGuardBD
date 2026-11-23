@@ -1,7 +1,4 @@
-"""
-run_all.py — One command to run the entire ML pipeline.
-Run: python src/ml/run_all.py
-"""
+
 import subprocess
 import sys
 from pathlib import Path

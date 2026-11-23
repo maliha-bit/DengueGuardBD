@@ -1,7 +1,4 @@
-"""
-train_case_forecaster.py — Predicts next-month infected count.
-Run: python src/ml/train_case_forecaster.py
-"""
+
 import pandas as pd
 import numpy as np
 import joblib

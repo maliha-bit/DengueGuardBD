@@ -1,7 +1,4 @@
-"""
-train_death_forecaster.py — Predicts next-month death count.
-Run: python src/ml/train_death_forecaster.py
-"""
+
 import pandas as pd
 import numpy as np
 import joblib
