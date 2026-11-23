@@ -2,11 +2,13 @@ import asyncio
 from collections.abc import AsyncIterator
 
 import pytest
+from httpx import ASGITransport, AsyncClient
 from sqlalchemy import event
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 
 from app.config import settings
-from app.db import CONNECT_ARGS
+from app.db import CONNECT_ARGS, get_db
+from app.main import app
 
 
 @pytest.fixture
@@ -48,6 +50,23 @@ async def db_session() -> AsyncIterator[AsyncSession]:
                 await connection.rollback()
     finally:
         await test_engine.dispose()
+
+
+@pytest.fixture
+async def client(db_session: AsyncSession) -> AsyncIterator[AsyncClient]:
+    """An AsyncClient against the real app, with get_db overridden to use
+    this test's rolled-back db_session instead of a fresh real-DB session —
+    so integration tests never write to the actual Neon database."""
+
+    async def _override() -> AsyncIterator[AsyncSession]:
+        yield db_session
+
+    app.dependency_overrides[get_db] = _override
+    try:
+        async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as c:
+            yield c
+    finally:
+        app.dependency_overrides.pop(get_db, None)
 
 
 def pytest_sessionfinish(session, exitstatus):

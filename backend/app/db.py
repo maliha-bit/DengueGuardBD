@@ -1,5 +1,7 @@
+from collections.abc import AsyncIterator
+
 from sqlalchemy import MetaData, text
-from sqlalchemy.ext.asyncio import AsyncEngine, async_sessionmaker, create_async_engine
+from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession, async_sessionmaker, create_async_engine
 from sqlalchemy.orm import DeclarativeBase
 
 from app.config import settings
@@ -36,3 +38,8 @@ async def get_db_status() -> str:
         return "connected"
     except Exception:
         return "disconnected"
+
+
+async def get_db() -> AsyncIterator[AsyncSession]:
+    async with async_session_maker() as session:
+        yield session
