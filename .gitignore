@@ -10,6 +10,10 @@ coverage
 docs/*.pdf
 CLAUDE.md
 
+# Claude Code / Superpowers local state
+.claude/
+.superpowers/
+
 # Playwright
 playwright-report
 test-results
