@@ -99,3 +99,50 @@ async def test_login_rate_limited_after_five_attempts(client):
         "email": "rl@example.com", "password": "wrong",
     })
     assert resp.status_code == 429
+
+
+async def _register_and_login(client, email: str) -> dict:
+    await client.post("/api/v1/auth/register", json={
+        "nameEn": "A", "nameBn": "আ", "email": email, "password": "password1",
+    })
+    resp = await client.post("/api/v1/auth/login", json={"email": email, "password": "password1"})
+    return resp.json()
+
+
+async def test_refresh_issues_new_access_token(client):
+    tokens = await _register_and_login(client, "refresh1@example.com")
+    resp = await client.post("/api/v1/auth/refresh", json={"refreshToken": tokens["refreshToken"]})
+    assert resp.status_code == 200
+    assert resp.json()["accessToken"]
+
+
+async def test_refresh_rejects_invalid_token(client):
+    resp = await client.post("/api/v1/auth/refresh", json={"refreshToken": "garbage"})
+    assert resp.status_code == 401
+
+
+async def test_me_requires_auth(client):
+    resp = await client.get("/api/v1/auth/me")
+    assert resp.status_code == 401
+
+
+async def test_me_returns_current_user(client):
+    tokens = await _register_and_login(client, "me1@example.com")
+    resp = await client.get(
+        "/api/v1/auth/me", headers={"Authorization": f"Bearer {tokens['accessToken']}"}
+    )
+    assert resp.status_code == 200
+    assert resp.json()["name"]["en"] == "A"
+
+
+async def test_logout_revokes_refresh_token(client):
+    tokens = await _register_and_login(client, "logout1@example.com")
+    headers = {"Authorization": f"Bearer {tokens['accessToken']}"}
+    logout_resp = await client.post(
+        "/api/v1/auth/logout", json={"refreshToken": tokens["refreshToken"]}, headers=headers
+    )
+    assert logout_resp.status_code == 204
+    refresh_resp = await client.post(
+        "/api/v1/auth/refresh", json={"refreshToken": tokens["refreshToken"]}
+    )
+    assert refresh_resp.status_code == 401

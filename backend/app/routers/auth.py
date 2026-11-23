@@ -1,14 +1,22 @@
 import uuid
 from datetime import UTC, datetime
 
+import jwt
 from fastapi import APIRouter, Depends, HTTPException, Request
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.db import get_db
+from app.deps import get_current_user
 from app.models.enums import ApprovalStatus, Role
 from app.models.user import RefreshToken, User
-from app.schemas.auth import LoginRequest, RegisterRequest, TokenPair
+from app.schemas.auth import (
+    AccessTokenResponse,
+    LoginRequest,
+    RefreshRequest,
+    RegisterRequest,
+    TokenPair,
+)
 from app.schemas.user import UserRead
 from app.services.rate_limit import check_rate_limit
 from app.services.security import (
@@ -88,3 +96,53 @@ async def login(
     await db.commit()
 
     return TokenPair(access_token=access, refresh_token=raw_refresh)
+
+
+@router.post("/refresh", response_model=AccessTokenResponse)
+async def refresh(
+    payload: RefreshRequest, db: AsyncSession = Depends(get_db)
+) -> AccessTokenResponse:
+    try:
+        claims = decode_token(payload.refresh_token)
+    except jwt.PyJWTError:
+        raise HTTPException(401, detail="Invalid refresh token") from None
+    if claims.get("type") != "refresh":
+        raise HTTPException(401, detail="Invalid refresh token")
+
+    token_hash = hash_token(payload.refresh_token)
+    row = (
+        await db.execute(select(RefreshToken).where(RefreshToken.token_hash == token_hash))
+    ).scalar_one_or_none()
+    if row is None or row.revoked or row.expires_at < datetime.now(UTC):
+        raise HTTPException(401, detail="Invalid refresh token")
+
+    user = await db.get(User, claims["sub"])
+    if user is None:
+        raise HTTPException(401, detail="Invalid refresh token")
+
+    return AccessTokenResponse(access_token=create_access_token(user.id, user.role.value))
+
+
+@router.post("/logout", status_code=204)
+async def logout(
+    payload: RefreshRequest,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+) -> None:
+    token_hash = hash_token(payload.refresh_token)
+    row = (
+        await db.execute(
+            select(RefreshToken).where(
+                RefreshToken.token_hash == token_hash,
+                RefreshToken.user_id == current_user.id,
+            )
+        )
+    ).scalar_one_or_none()
+    if row is not None:
+        row.revoked = True
+        await db.commit()
+
+
+@router.get("/me", response_model=UserRead)
+async def me(current_user: User = Depends(get_current_user)) -> User:
+    return current_user
