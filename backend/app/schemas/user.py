@@ -41,3 +41,13 @@ class UserCreate(CamelModel):
     division_id: str | None = None
     district_id: str | None = None
     language: Language = Language.en
+
+
+class UserUpdate(CamelModel):
+    name_en: str | None = None
+    name_bn: str | None = None
+    phone: str | None = None
+    division_id: str | None = None
+    district_id: str | None = None
+    language: Language | None = None
+    alert_divisions: list[str] | None = None
