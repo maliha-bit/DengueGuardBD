@@ -128,3 +128,17 @@ is `"disconnected"` until `.env` has a real, reachable `DATABASE_URL`.
 on every push to `frontend`, live at https://maliha-bit.github.io/DengueGuardBD/. Production
 builds use the `/DengueGuardBD/` base path (set in `vite.config.ts`, case-sensitive), and `404.html` is a
 copy of `index.html` so deep links work.
+
+## Contributions
+
+Taken from git commit authorship (see `JOURNAL.md` for the day-by-day breakdown).
+
+| Member | Student ID | Contributions |
+| --- | --- | --- |
+| Maliha Rahman | 232-35-229 | Frontend (project scaffold, UI kit, all feature phases, staff portals, PWA/offline support, Playwright end-to-end tests, GitHub Pages deployment) and backend (FastAPI scaffold, database models/schemas, migrations) (to be confirmed) |
+| Safin Siddiqua | 232-35-435 | Dataset collection and exploratory data analysis (to be confirmed) |
+
+## Tools used
+
+React, Vite, TypeScript, Tailwind CSS, FastAPI, PostgreSQL (Neon), Git/GitHub, and an AI coding
+assistant (Claude Code) for parts of the code.
