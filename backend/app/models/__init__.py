@@ -1,4 +1,5 @@
 from app.models.forecast import Forecast, ForecastRun
+from app.models.audit import AuditLog
 from app.models.chatbot import ChatMessage, ChatSession, KnowledgeSource
 from app.models.geo import District, Division
 from app.models.health_records import ChecklistProgress, FeverLog, TriageResult
@@ -12,6 +13,7 @@ from app.models.hospital import (
 )
 from app.models.donor import DonorProfile, DonorRequest, MisuseReport
 from app.models.lab import Lab, LabTest
+from app.models.notification import Notification
 from app.models.reports import BreedingReport, PreventionTask, ReportStatusHistory
 from app.models.user import RefreshToken, User
 
@@ -42,4 +44,6 @@ __all__ = [
     "KnowledgeSource",
     "ChatSession",
     "ChatMessage",
+    "Notification",
+    "AuditLog",
 ]
