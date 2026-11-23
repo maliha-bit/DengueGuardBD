@@ -1,5 +1,3 @@
-from sqlalchemy import UniqueConstraint
-
 from app.models.user import RefreshToken, User
 
 

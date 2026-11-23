@@ -1,0 +1,337 @@
+"""Static reference data for the seed script.
+
+All names, phone numbers and figures here are simulated demo data for the
+dev/staging environment — not real statistics, hospitals or people.
+"""
+
+DIVISIONS = [
+    {"id": "dhaka", "name_en": "Dhaka", "name_bn": "ঢাকা", "center": (23.8103, 90.4125)},
+    {
+        "id": "chattogram",
+        "name_en": "Chattogram",
+        "name_bn": "চট্টগ্রাম",
+        "center": (22.3569, 91.7832),
+    },
+    {
+        "id": "rajshahi",
+        "name_en": "Rajshahi",
+        "name_bn": "রাজশাহী",
+        "center": (24.3745, 88.6042),
+    },
+    {"id": "khulna", "name_en": "Khulna", "name_bn": "খুলনা", "center": (22.8456, 89.5403)},
+    {
+        "id": "barishal",
+        "name_en": "Barishal",
+        "name_bn": "বরিশাল",
+        "center": (22.7010, 90.3535),
+    },
+    {"id": "sylhet", "name_en": "Sylhet", "name_bn": "সিলেট", "center": (24.8949, 91.8687)},
+    {"id": "rangpur", "name_en": "Rangpur", "name_bn": "রংপুর", "center": (25.7439, 89.2752)},
+    {
+        "id": "mymensingh",
+        "name_en": "Mymensingh",
+        "name_bn": "ময়মনসিংহ",
+        "center": (24.7471, 90.4203),
+    },
+]
+
+# A handful of real districts per division, with approximate centers
+# (geographic facts, not invented statistics).
+DISTRICTS = [
+    {
+        "id": "dhaka-dhaka",
+        "division_id": "dhaka",
+        "name_en": "Dhaka",
+        "name_bn": "ঢাকা",
+        "center": (23.8103, 90.4125),
+    },
+    {
+        "id": "dhaka-gazipur",
+        "division_id": "dhaka",
+        "name_en": "Gazipur",
+        "name_bn": "গাজীপুর",
+        "center": (23.9999, 90.4203),
+    },
+    {
+        "id": "dhaka-narayanganj",
+        "division_id": "dhaka",
+        "name_en": "Narayanganj",
+        "name_bn": "নারায়ণগঞ্জ",
+        "center": (23.6238, 90.5000),
+    },
+    {
+        "id": "dhaka-tangail",
+        "division_id": "dhaka",
+        "name_en": "Tangail",
+        "name_bn": "টাঙ্গাইল",
+        "center": (24.2513, 89.9167),
+    },
+    {
+        "id": "dhaka-faridpur",
+        "division_id": "dhaka",
+        "name_en": "Faridpur",
+        "name_bn": "ফরিদপুর",
+        "center": (23.6070, 89.8429),
+    },
+    {
+        "id": "ctg-chattogram",
+        "division_id": "chattogram",
+        "name_en": "Chattogram",
+        "name_bn": "চট্টগ্রাম",
+        "center": (22.3569, 91.7832),
+    },
+    {
+        "id": "ctg-coxsbazar",
+        "division_id": "chattogram",
+        "name_en": "Cox's Bazar",
+        "name_bn": "কক্সবাজার",
+        "center": (21.4272, 92.0058),
+    },
+    {
+        "id": "ctg-comilla",
+        "division_id": "chattogram",
+        "name_en": "Comilla",
+        "name_bn": "কুমিল্লা",
+        "center": (23.4607, 91.1809),
+    },
+    {
+        "id": "ctg-feni",
+        "division_id": "chattogram",
+        "name_en": "Feni",
+        "name_bn": "ফেনী",
+        "center": (23.0159, 91.3976),
+    },
+    {
+        "id": "ctg-noakhali",
+        "division_id": "chattogram",
+        "name_en": "Noakhali",
+        "name_bn": "নোয়াখালী",
+        "center": (22.8696, 91.0995),
+    },
+    {
+        "id": "raj-rajshahi",
+        "division_id": "rajshahi",
+        "name_en": "Rajshahi",
+        "name_bn": "রাজশাহী",
+        "center": (24.3745, 88.6042),
+    },
+    {
+        "id": "raj-bogura",
+        "division_id": "rajshahi",
+        "name_en": "Bogura",
+        "name_bn": "বগুড়া",
+        "center": (24.8465, 89.3773),
+    },
+    {
+        "id": "raj-pabna",
+        "division_id": "rajshahi",
+        "name_en": "Pabna",
+        "name_bn": "পাবনা",
+        "center": (24.0064, 89.2372),
+    },
+    {
+        "id": "raj-sirajganj",
+        "division_id": "rajshahi",
+        "name_en": "Sirajganj",
+        "name_bn": "সিরাজগঞ্জ",
+        "center": (24.4533, 89.7006),
+    },
+    {
+        "id": "raj-natore",
+        "division_id": "rajshahi",
+        "name_en": "Natore",
+        "name_bn": "নাটোর",
+        "center": (24.4206, 88.9873),
+    },
+    {
+        "id": "khl-khulna",
+        "division_id": "khulna",
+        "name_en": "Khulna",
+        "name_bn": "খুলনা",
+        "center": (22.8456, 89.5403),
+    },
+    {
+        "id": "khl-jessore",
+        "division_id": "khulna",
+        "name_en": "Jessore",
+        "name_bn": "যশোর",
+        "center": (23.1667, 89.2167),
+    },
+    {
+        "id": "khl-satkhira",
+        "division_id": "khulna",
+        "name_en": "Satkhira",
+        "name_bn": "সাতক্ষীরা",
+        "center": (22.7185, 89.0705),
+    },
+    {
+        "id": "khl-bagerhat",
+        "division_id": "khulna",
+        "name_en": "Bagerhat",
+        "name_bn": "বাগেরহাট",
+        "center": (22.6602, 89.7895),
+    },
+    {
+        "id": "khl-kushtia",
+        "division_id": "khulna",
+        "name_en": "Kushtia",
+        "name_bn": "কুষ্টিয়া",
+        "center": (23.9013, 89.1200),
+    },
+    {
+        "id": "bar-barishal",
+        "division_id": "barishal",
+        "name_en": "Barishal",
+        "name_bn": "বরিশাল",
+        "center": (22.7010, 90.3535),
+    },
+    {
+        "id": "bar-patuakhali",
+        "division_id": "barishal",
+        "name_en": "Patuakhali",
+        "name_bn": "পটুয়াখালী",
+        "center": (22.3596, 90.3296),
+    },
+    {
+        "id": "bar-bhola",
+        "division_id": "barishal",
+        "name_en": "Bhola",
+        "name_bn": "ভোলা",
+        "center": (22.6859, 90.6482),
+    },
+    {
+        "id": "bar-pirojpur",
+        "division_id": "barishal",
+        "name_en": "Pirojpur",
+        "name_bn": "পিরোজপুর",
+        "center": (22.5841, 89.9720),
+    },
+    {
+        "id": "syl-sylhet",
+        "division_id": "sylhet",
+        "name_en": "Sylhet",
+        "name_bn": "সিলেট",
+        "center": (24.8949, 91.8687),
+    },
+    {
+        "id": "syl-moulvibazar",
+        "division_id": "sylhet",
+        "name_en": "Moulvibazar",
+        "name_bn": "মৌলভীবাজার",
+        "center": (24.4829, 91.7774),
+    },
+    {
+        "id": "syl-habiganj",
+        "division_id": "sylhet",
+        "name_en": "Habiganj",
+        "name_bn": "হবিগঞ্জ",
+        "center": (24.3745, 91.4154),
+    },
+    {
+        "id": "syl-sunamganj",
+        "division_id": "sylhet",
+        "name_en": "Sunamganj",
+        "name_bn": "সুনামগঞ্জ",
+        "center": (25.0658, 91.3950),
+    },
+    {
+        "id": "ran-rangpur",
+        "division_id": "rangpur",
+        "name_en": "Rangpur",
+        "name_bn": "রংপুর",
+        "center": (25.7439, 89.2752),
+    },
+    {
+        "id": "ran-dinajpur",
+        "division_id": "rangpur",
+        "name_en": "Dinajpur",
+        "name_bn": "দিনাজপুর",
+        "center": (25.6279, 88.6332),
+    },
+    {
+        "id": "ran-kurigram",
+        "division_id": "rangpur",
+        "name_en": "Kurigram",
+        "name_bn": "কুড়িগ্রাম",
+        "center": (25.8072, 89.6295),
+    },
+    {
+        "id": "ran-thakurgaon",
+        "division_id": "rangpur",
+        "name_en": "Thakurgaon",
+        "name_bn": "ঠাকুরগাঁও",
+        "center": (26.0336, 88.4616),
+    },
+    {
+        "id": "mym-mymensingh",
+        "division_id": "mymensingh",
+        "name_en": "Mymensingh",
+        "name_bn": "ময়মনসিংহ",
+        "center": (24.7471, 90.4203),
+    },
+    {
+        "id": "mym-jamalpur",
+        "division_id": "mymensingh",
+        "name_en": "Jamalpur",
+        "name_bn": "জামালপুর",
+        "center": (24.9375, 89.9377),
+    },
+    {
+        "id": "mym-netrokona",
+        "division_id": "mymensingh",
+        "name_en": "Netrokona",
+        "name_bn": "নেত্রকোণা",
+        "center": (24.8700, 90.7280),
+    },
+    {
+        "id": "mym-sherpur",
+        "division_id": "mymensingh",
+        "name_en": "Sherpur",
+        "name_bn": "শেরপুর",
+        "center": (25.0200, 90.0153),
+    },
+]
+
+# The "division capital" district used to anchor hospitals/labs per division.
+DIVISION_CAPITAL_DISTRICT = {
+    "dhaka": "dhaka-dhaka",
+    "chattogram": "ctg-chattogram",
+    "rajshahi": "raj-rajshahi",
+    "khulna": "khl-khulna",
+    "barishal": "bar-barishal",
+    "sylhet": "syl-sylhet",
+    "rangpur": "ran-rangpur",
+    "mymensingh": "mym-mymensingh",
+}
+
+DOCTOR_FIRST_NAMES = [
+    "Rahim",
+    "Karim",
+    "Fatema",
+    "Nasrin",
+    "Mamun",
+    "Shirin",
+    "Jahangir",
+    "Rehana",
+    "Shahed",
+    "Afsana",
+]
+DOCTOR_LAST_NAMES = ["Ahmed", "Uddin", "Begum", "Islam", "Rahman", "Chowdhury", "Hossain"]
+SPECIALTIES = [
+    ("Internal Medicine", "মেডিসিন"),
+    ("Pediatrics", "শিশুরোগ"),
+    ("Emergency Medicine", "জরুরি চিকিৎসা"),
+]
+
+DONOR_FIRST_NAMES = [
+    "Tanvir",
+    "Sumaiya",
+    "Rakib",
+    "Nabila",
+    "Imran",
+    "Mitu",
+    "Shamim",
+    "Rupa",
+    "Habib",
+    "Dola",
+]
