@@ -1,9 +1,18 @@
+import pytest
 from sqlalchemy import select
 
 from app.models.audit import AuditLog
 from app.models.enums import ApprovalStatus, AuditAction, Role
 from app.models.user import User
+from app.services.rate_limit import reset_rate_limits
 from app.services.security import hash_password
+
+
+@pytest.fixture(autouse=True)
+def _reset_rate_limit():
+    reset_rate_limits()
+    yield
+    reset_rate_limits()
 
 
 async def _make(db_session, role, approval_status, email) -> User:
@@ -92,3 +101,37 @@ async def test_reject_staff_sets_rejected_with_reason_and_audit_row(client, db_s
         select(AuditLog).where(AuditLog.action == AuditAction.signup_reject)
     )).scalar_one()
     assert "no license on file" in row.target_en
+
+
+async def test_reject_non_staff_user_is_409(client, db_session):
+    citizen = await _make(db_session, Role.citizen, ApprovalStatus.approved, "citizen2@example.com")
+    admin = await _make(db_session, Role.admin, ApprovalStatus.approved, "admin5@example.com")
+    admin.password_hash = hash_password("password1")
+    await db_session.commit()
+
+    headers = await _login_headers(client, "admin5@example.com")
+    resp = await client.post(
+        f"/api/v1/admin/staff/{citizen.id}/reject", json={"reason": "not staff"}, headers=headers
+    )
+    assert resp.status_code == 409
+
+
+async def test_approve_already_approved_staff_is_409(client, db_session):
+    staff = await _make(db_session, Role.hospital_staff, ApprovalStatus.approved, "staff3@example.com")
+    admin = await _make(db_session, Role.admin, ApprovalStatus.approved, "admin6@example.com")
+    admin.password_hash = hash_password("password1")
+    await db_session.commit()
+
+    headers = await _login_headers(client, "admin6@example.com")
+    resp = await client.post(f"/api/v1/admin/staff/{staff.id}/approve", headers=headers)
+    assert resp.status_code == 409
+
+
+async def test_admin_cannot_reject_own_account(client, db_session):
+    admin = await _make(db_session, Role.admin, ApprovalStatus.approved, "admin7@example.com")
+    admin.password_hash = hash_password("password1")
+    await db_session.commit()
+
+    headers = await _login_headers(client, "admin7@example.com")
+    resp = await client.post(f"/api/v1/admin/staff/{admin.id}/reject", json={"reason": "x"}, headers=headers)
+    assert resp.status_code == 409

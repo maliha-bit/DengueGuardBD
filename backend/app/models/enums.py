@@ -10,6 +10,9 @@ class Role(str, enum.Enum):
     admin = "admin"
 
 
+STAFF_ROLES = {Role.hospital_staff, Role.lab_staff, Role.authority}
+
+
 class ApprovalStatus(str, enum.Enum):
     pending = "pending"
     approved = "approved"

@@ -4,7 +4,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.db import get_db
 from app.deps import require_role
-from app.models.enums import ApprovalStatus, AuditAction, Role
+from app.models.enums import STAFF_ROLES, ApprovalStatus, AuditAction, Role
 from app.models.user import User
 from app.schemas.auth import RejectRequest
 from app.schemas.user import UserRead
@@ -30,6 +30,8 @@ async def approve_staff(
     target = await db.get(User, user_id)
     if target is None:
         raise HTTPException(404, detail="User not found")
+    if target.role not in STAFF_ROLES or target.approval_status != ApprovalStatus.pending:
+        raise HTTPException(409, detail="User is not a pending staff signup")
 
     target.approval_status = ApprovalStatus.approved
     await audit.log(
@@ -53,6 +55,8 @@ async def reject_staff(
     target = await db.get(User, user_id)
     if target is None:
         raise HTTPException(404, detail="User not found")
+    if target.role not in STAFF_ROLES or target.approval_status != ApprovalStatus.pending:
+        raise HTTPException(409, detail="User is not a pending staff signup")
 
     target.approval_status = ApprovalStatus.rejected
     await audit.log(
