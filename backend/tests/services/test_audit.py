@@ -36,3 +36,14 @@ async def test_log_appends_details_to_target_text(db_session, actor):
         details="duplicate account",
     )
     assert "duplicate account" in entry.target_en
+
+
+async def test_log_truncates_overlong_target_text(db_session, actor):
+    long_details = "x" * 500
+    entry = await log(
+        db_session, actor, AuditAction.signup_reject, "Jane Doe", "জেন ডো",
+        details=long_details,
+    )
+    await db_session.flush()
+    assert len(entry.target_en) <= 200
+    assert len(entry.target_bn) <= 200

@@ -127,6 +127,22 @@ async def test_approve_already_approved_staff_is_409(client, db_session):
     assert resp.status_code == 409
 
 
+async def test_reject_with_long_reason_does_not_crash(client, db_session):
+    staff = await _make(db_session, Role.lab_staff, ApprovalStatus.pending, "staff4@example.com")
+    admin = await _make(db_session, Role.admin, ApprovalStatus.approved, "admin8@example.com")
+    admin.password_hash = hash_password("password1")
+    await db_session.commit()
+
+    headers = await _login_headers(client, "admin8@example.com")
+    resp = await client.post(
+        f"/api/v1/admin/staff/{staff.id}/reject",
+        json={"reason": "x" * 500},
+        headers=headers,
+    )
+    assert resp.status_code == 200
+    assert resp.json()["approvalStatus"] == "rejected"
+
+
 async def test_admin_cannot_reject_own_account(client, db_session):
     admin = await _make(db_session, Role.admin, ApprovalStatus.approved, "admin7@example.com")
     admin.password_hash = hash_password("password1")

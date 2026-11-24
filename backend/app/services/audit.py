@@ -7,6 +7,9 @@ from app.models.enums import AuditAction
 from app.models.user import User
 
 
+_TARGET_MAX_LENGTH = 200  # matches AuditLog.target_en/target_bn column width
+
+
 async def log(
     db: AsyncSession,
     actor: User,
@@ -18,6 +21,8 @@ async def log(
     if details:
         target_en = f"{target_en} — {details}"
         target_bn = f"{target_bn} — {details}"
+    target_en = target_en[:_TARGET_MAX_LENGTH]
+    target_bn = target_bn[:_TARGET_MAX_LENGTH]
 
     entry = AuditLog(
         actor_id=actor.id,
