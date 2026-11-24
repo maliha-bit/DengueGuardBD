@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
 from app.config import settings
-from app.routers import admin, auth, health, users
+from app.routers import admin, auth, doctors, health, hospital_staff, hospitals, users
 
 app = FastAPI(title="DengueGuard BD API")
 
@@ -36,3 +36,6 @@ app.include_router(health.router, prefix="/api/v1")
 app.include_router(auth.router, prefix="/api/v1")
 app.include_router(admin.router, prefix="/api/v1")
 app.include_router(users.router, prefix="/api/v1")
+app.include_router(hospitals.router, prefix="/api/v1")
+app.include_router(doctors.router, prefix="/api/v1")
+app.include_router(hospital_staff.router, prefix="/api/v1")
