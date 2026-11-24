@@ -1,3 +1,15 @@
+import pytest
+
+from app.services.rate_limit import reset_rate_limits
+
+
+@pytest.fixture(autouse=True)
+def _reset_rate_limit():
+    reset_rate_limits()
+    yield
+    reset_rate_limits()
+
+
 async def _register_and_login(client, email: str) -> dict:
     await client.post("/api/v1/auth/register", json={
         "nameEn": "A", "nameBn": "আ", "email": email, "password": "password1",
@@ -39,3 +51,19 @@ async def test_patch_me_ignores_unset_fields(client):
     resp = await client.patch("/api/v1/users/me", json={"nameBn": "নতুন নাম"}, headers=headers)
     assert resp.status_code == 200
     assert resp.json()["name"]["bn"] == "নতুন নাম"
+
+
+async def test_patch_me_rejects_null_name_en(client):
+    tokens = await _register_and_login(client, "profile4@example.com")
+    headers = {"Authorization": f"Bearer {tokens['accessToken']}"}
+    resp = await client.patch("/api/v1/users/me", json={"nameEn": None}, headers=headers)
+    assert resp.status_code == 422
+
+
+async def test_patch_me_invalid_division_id_returns_422(client):
+    tokens = await _register_and_login(client, "profile5@example.com")
+    headers = {"Authorization": f"Bearer {tokens['accessToken']}"}
+    resp = await client.patch(
+        "/api/v1/users/me", json={"divisionId": "atlantis"}, headers=headers
+    )
+    assert resp.status_code == 422

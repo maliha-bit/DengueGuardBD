@@ -117,7 +117,9 @@ async def test_reject_non_staff_user_is_409(client, db_session):
 
 
 async def test_approve_already_approved_staff_is_409(client, db_session):
-    staff = await _make(db_session, Role.hospital_staff, ApprovalStatus.approved, "staff3@example.com")
+    staff = await _make(
+        db_session, Role.hospital_staff, ApprovalStatus.approved, "staff3@example.com"
+    )
     admin = await _make(db_session, Role.admin, ApprovalStatus.approved, "admin6@example.com")
     admin.password_hash = hash_password("password1")
     await db_session.commit()
@@ -149,5 +151,7 @@ async def test_admin_cannot_reject_own_account(client, db_session):
     await db_session.commit()
 
     headers = await _login_headers(client, "admin7@example.com")
-    resp = await client.post(f"/api/v1/admin/staff/{admin.id}/reject", json={"reason": "x"}, headers=headers)
+    resp = await client.post(
+        f"/api/v1/admin/staff/{admin.id}/reject", json={"reason": "x"}, headers=headers
+    )
     assert resp.status_code == 409

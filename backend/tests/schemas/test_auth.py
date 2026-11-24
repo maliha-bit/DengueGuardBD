@@ -30,3 +30,26 @@ def test_token_pair_uses_camel_case_aliases():
     assert pair.model_dump(by_alias=True) == {
         "accessToken": "a", "refreshToken": "b", "tokenType": "bearer",
     }
+
+
+def test_register_rejects_overlong_phone():
+    with pytest.raises(ValidationError):
+        RegisterRequest(
+            nameEn="A", nameBn="আ", email="a@example.com", password="password1",
+            phone="1" * 33,
+        )
+
+
+def test_register_rejects_overlong_organisation_id():
+    with pytest.raises(ValidationError):
+        RegisterRequest(
+            nameEn="A", nameBn="আ", email="a@example.com", password="password1",
+            role=Role.hospital_staff, organisationId="x" * 37,
+        )
+
+
+def test_register_rejects_overlong_name():
+    with pytest.raises(ValidationError):
+        RegisterRequest(
+            nameEn="A" * 101, nameBn="আ", email="a@example.com", password="password1",
+        )

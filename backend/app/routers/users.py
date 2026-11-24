@@ -1,4 +1,5 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.db import get_db
@@ -23,5 +24,9 @@ async def update_me(
     for field, value in payload.model_dump(exclude_unset=True).items():
         setattr(current_user, field, value)
     db.add(current_user)
-    await db.commit()
+    try:
+        await db.commit()
+    except IntegrityError as exc:
+        await db.rollback()
+        raise HTTPException(422, detail="Invalid reference data") from exc
     return current_user

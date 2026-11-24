@@ -101,6 +101,34 @@ async def test_login_rate_limited_after_five_attempts(client):
     assert resp.status_code == 429
 
 
+async def test_register_invalid_division_id_returns_422(client):
+    resp = await client.post("/api/v1/auth/register", json={
+        "nameEn": "A", "nameBn": "আ", "email": "baddivision@example.com", "password": "password1",
+        "divisionId": "atlantis",
+    })
+    assert resp.status_code == 422
+
+
+async def test_register_duplicate_email_different_case_is_409(client):
+    await client.post("/api/v1/auth/register", json={
+        "nameEn": "A", "nameBn": "আ", "email": "CaseTest@example.com", "password": "password1",
+    })
+    resp = await client.post("/api/v1/auth/register", json={
+        "nameEn": "B", "nameBn": "ব", "email": "casetest@example.com", "password": "password1",
+    })
+    assert resp.status_code == 409
+
+
+async def test_login_is_case_insensitive(client):
+    await client.post("/api/v1/auth/register", json={
+        "nameEn": "A", "nameBn": "আ", "email": "lowercase@example.com", "password": "password1",
+    })
+    resp = await client.post("/api/v1/auth/login", json={
+        "email": "LOWERCASE@EXAMPLE.COM", "password": "password1",
+    })
+    assert resp.status_code == 200
+
+
 async def _register_and_login(client, email: str) -> dict:
     await client.post("/api/v1/auth/register", json={
         "nameEn": "A", "nameBn": "আ", "email": email, "password": "password1",

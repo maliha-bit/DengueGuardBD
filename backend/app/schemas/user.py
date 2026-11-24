@@ -1,6 +1,6 @@
 from typing import Any
 
-from pydantic import EmailStr, model_validator
+from pydantic import EmailStr, Field, model_validator
 
 from app.models.enums import ApprovalStatus, Language, Role
 from app.schemas.common import CamelModel, LocalizedText, loc
@@ -43,11 +43,21 @@ class UserCreate(CamelModel):
     language: Language = Language.en
 
 
+_NOT_NULLABLE_FIELDS = ("name_en", "name_bn", "language", "alert_divisions")
+
+
 class UserUpdate(CamelModel):
-    name_en: str | None = None
-    name_bn: str | None = None
-    phone: str | None = None
+    name_en: str | None = Field(default=None, max_length=100)
+    name_bn: str | None = Field(default=None, max_length=100)
+    phone: str | None = Field(default=None, max_length=32)
     division_id: str | None = None
     district_id: str | None = None
     language: Language | None = None
     alert_divisions: list[str] | None = None
+
+    @model_validator(mode="after")
+    def _reject_null_for_non_nullable_fields(self) -> "UserUpdate":
+        for field in _NOT_NULLABLE_FIELDS:
+            if field in self.model_fields_set and getattr(self, field) is None:
+                raise ValueError(f"{field} cannot be null")
+        return self

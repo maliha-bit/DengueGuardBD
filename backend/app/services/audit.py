@@ -6,7 +6,6 @@ from app.models.audit import AuditLog
 from app.models.enums import AuditAction
 from app.models.user import User
 
-
 _TARGET_MAX_LENGTH = 200  # matches AuditLog.target_en/target_bn column width
 
 

@@ -4,6 +4,7 @@ from datetime import UTC, datetime
 import jwt
 from fastapi import APIRouter, Depends, HTTPException, Request
 from sqlalchemy import select
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.db import get_db
@@ -61,7 +62,13 @@ async def register(payload: RegisterRequest, db: AsyncSession = Depends(get_db))
         alert_divisions=[],
     )
     db.add(user)
-    await db.commit()
+    try:
+        await db.commit()
+    except IntegrityError as exc:
+        await db.rollback()
+        if getattr(exc.orig, "sqlstate", None) == "23505":
+            raise HTTPException(409, detail="Email already registered") from exc
+        raise HTTPException(422, detail="Invalid reference data") from exc
     return user
 
 
