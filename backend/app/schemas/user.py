@@ -31,6 +31,39 @@ class UserRead(CamelModel):
         return obj
 
 
+class ProfileRead(CamelModel):
+    user_id: str
+    name: LocalizedText
+    email: str
+    phone: str | None
+    role: Role
+    division_id: str | None
+    district_id: str | None
+    alert_divisions: list[str]
+    language: Language
+    approval_status: ApprovalStatus | None = None
+    organisation_id: str | None = None
+
+    @model_validator(mode="before")
+    @classmethod
+    def _assemble(cls, obj: Any) -> Any:
+        if hasattr(obj, "name_en"):
+            return {
+                "user_id": obj.id,
+                "name": loc(obj, "name"),
+                "email": obj.email,
+                "phone": obj.phone,
+                "role": obj.role,
+                "division_id": obj.division_id,
+                "district_id": obj.district_id,
+                "alert_divisions": obj.alert_divisions,
+                "language": obj.language,
+                "approval_status": obj.approval_status,
+                "organisation_id": obj.organisation_id,
+            }
+        return obj
+
+
 class UserCreate(CamelModel):
     name_en: str
     name_bn: str

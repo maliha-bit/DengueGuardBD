@@ -67,3 +67,20 @@ async def test_patch_me_invalid_division_id_returns_422(client):
         "/api/v1/users/me", json={"divisionId": "atlantis"}, headers=headers
     )
     assert resp.status_code == 422
+
+
+async def test_get_me_includes_phone_district_and_language(client):
+    tokens = await _register_and_login(client, "profile6@example.com")
+    headers = {"Authorization": f"Bearer {tokens['accessToken']}"}
+    await client.patch(
+        "/api/v1/users/me",
+        json={"phone": "+8801700000003", "divisionId": "dhaka", "districtId": "dhaka-dhaka"},
+        headers=headers,
+    )
+    resp = await client.get("/api/v1/users/me", headers=headers)
+    assert resp.status_code == 200
+    body = resp.json()
+    assert body["phone"] == "+8801700000003"
+    assert body["districtId"] == "dhaka-dhaka"
+    assert body["language"] == "en"
+    assert body["email"] == "profile6@example.com"
